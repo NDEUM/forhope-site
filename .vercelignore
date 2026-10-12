@@ -1,0 +1,11 @@
+node_modules
+.next
+*.ai
+*.zip
+FH_CharteGGraphique2022.pdf
+RS
+rendu
+.claude
+.agents
+skills-lock.json
+*.tsbuildinfo

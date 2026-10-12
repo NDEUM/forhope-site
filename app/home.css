@@ -1,0 +1,1668 @@
+/* ==========================================================================
+   HOMEPAGE — le voyage (espace → Afrique → Sénégal → For Hope) puis le récit
+   ========================================================================== */
+
+.home2 {
+  /* le noir de l'espace : Midnight assombri (charte) */
+  --space: color-mix(in srgb, var(--midnight) 32%, black);
+  --ink: var(--white);
+  --soft: rgb(255 255 255 / 0.66);
+  --faint: rgb(255 255 255 / 0.4);
+  background: var(--midnight);
+}
+
+/* ---------- Le voyage ---------- */
+
+.journey {
+  position: relative;
+  height: var(--len, 500svh);
+}
+
+.journey__canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: var(--space);
+}
+
+.journey__canvas canvas {
+  display: block;
+}
+
+.journey__stage {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  height: 100svh;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Sans WebGL : l'image satellite, recadrée sur l'Afrique, s'approche doucement. */
+.journey__fallback {
+  position: absolute;
+  inset: 0;
+  display: none;
+  background: url("/media/earth/day-2k.jpg") 47% 40% / 260% auto no-repeat, var(--space);
+  transform: scale(calc(1 + var(--progress, 0) * 2.2));
+  transform-origin: 44% 42%;
+}
+
+html.no-webgl .journey__fallback {
+  display: block;
+}
+
+/* Titrage d'ouverture « FOR HOPE » — dans le noir de l'espace, jamais sur la Terre */
+.journey__title {
+  position: absolute;
+  left: var(--gutter);
+  top: clamp(6rem, 17svh, 11rem);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0;
+  font-size: clamp(1.6rem, 2.9vw, 3rem);
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.journey__title-line {
+  /* Mécanisme : chaque ligne est un volet monté sur charnière (bord haut).
+     Au défilement, les volets basculent l'un après l'autre, avec un cran
+     de recul avant de partir — comme un tableau d'affichage mécanique. */
+  --lo: clamp(0, calc((var(--title-out, 0) - var(--l) * 0.24) * 2.4), 1);
+  display: flex;
+  gap: 0.28em;
+  transform-origin: 50% 0%;
+  transform: perspective(700px) translateY(calc(var(--lo) * -0.35em)) rotateX(calc(var(--lo) * 98deg - sin(var(--lo) * 3.1416) * 6deg));
+  opacity: calc(1 - var(--lo) * var(--lo));
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+}
+
+/* les mots d'une ligne glissent d'un cran, en sens alterné, pendant la bascule */
+.journey__title-letter {
+  display: inline-block;
+  transform: translateX(calc(var(--lo, 0) * (var(--c) * 0.6em)));
+}
+
+.journey__title-letter > span {
+  display: inline-block;
+  background: linear-gradient(180deg, #fff 35%, rgb(255 255 255 / 0.55) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Écran vertical (mobile) : le titre reste au-dessus de la Terre, dans le noir. */
+@media (orientation: portrait) and (max-width: 900px) {
+  .journey__title {
+    top: clamp(5.5rem, 12svh, 8rem);
+    font-size: clamp(1.4rem, 6.4vw, 2rem);
+  }
+}
+
+/* Entrée : les lettres montent une à une quand le chargement se lève. */
+.js .journey__title-letter > span {
+  transform: translateY(70%);
+  opacity: 0;
+}
+
+.is-ready .journey__title-letter > span {
+  animation: journey-title-in 1.6s var(--ease-expo) forwards;
+  animation-delay: calc(0.35s + var(--i) * 90ms);
+}
+
+@keyframes journey-title-in {
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journey__title-line,
+  .journey__title-letter {
+    transform: none;
+  }
+
+  .js .journey__title-letter > span,
+  .is-ready .journey__title-letter > span {
+    transform: none;
+    opacity: 1;
+    animation: none;
+  }
+}
+
+/* Premier écran */
+.journey__intro {
+  position: absolute;
+  left: var(--gutter);
+  bottom: 12svh;
+  max-width: 36rem;
+}
+
+.journey__eyebrow,
+.journey__caption-meta,
+.journey__chapters,
+.journey__altitude,
+.journey__cue {
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+}
+
+.journey__eyebrow {
+  margin: 0 0 1.4rem;
+  color: var(--saloum-blue);
+}
+
+.journey__lead {
+  margin: 0;
+  font-size: clamp(2.2rem, 5vw, 5rem);
+  font-weight: 300;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+}
+
+.journey__cue {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 2.4rem 0 0;
+  color: var(--soft);
+}
+
+.journey__cue-line {
+  position: relative;
+  width: 64px;
+  height: 1px;
+  overflow: hidden;
+  background: rgb(255 255 255 / 0.25);
+}
+
+.journey__cue-line::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--saloum-blue);
+  animation: journey-sweep 2.6s var(--ease) infinite;
+}
+
+@keyframes journey-sweep {
+  0% { transform: translateX(-100%); }
+  70%, 100% { transform: translateX(100%); }
+}
+
+/* Repères géographiques : du texte qui appartient au film, pas une interface. */
+.journey__captions {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.journey__caption {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  width: max-content;
+  max-width: 92vw;
+  margin: 0;
+  translate: -50% -50%;
+  opacity: 0;
+  visibility: hidden;
+  text-align: center;
+  text-shadow: 0 2px 30px rgb(12 13 35 / 0.6);
+}
+
+.journey__caption-title {
+  font-size: clamp(2.6rem, 9vw, 9.5rem);
+  font-weight: 300;
+  line-height: 0.95;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  /* l'espacement final ne décale pas le centrage */
+  margin-right: -0.16em;
+}
+
+.journey__caption--ouest .journey__caption-title {
+  font-size: clamp(2rem, 6vw, 6.2rem);
+}
+
+.journey__caption--terre .journey__caption-title {
+  font-size: clamp(2rem, 5vw, 4.6rem);
+  letter-spacing: 0.3em;
+  margin-right: -0.3em;
+}
+
+.journey__caption-meta {
+  color: var(--soft);
+}
+
+.journey__caption--senegal .journey__caption-meta {
+  color: var(--saloum-blue);
+}
+
+/* Instruments : index des chapitres et altitude. */
+.journey__hud {
+  position: absolute;
+  inset: auto var(--gutter) 5.5svh;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  opacity: calc(1 - var(--arrive, 0));
+}
+
+html.no-webgl .journey__altitude {
+  visibility: hidden;
+}
+
+.journey__chapters {
+  display: flex;
+  gap: 1.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--faint);
+}
+
+.journey__chapters li {
+  position: relative;
+  padding-top: 0.9rem;
+  transition: color 600ms var(--ease);
+}
+
+.journey__chapters li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0.25);
+  transform-origin: left;
+  transition: transform 800ms var(--ease-expo);
+}
+
+.journey__chapters li.is-active {
+  color: var(--white);
+}
+
+.journey__chapters li.is-active::before {
+  background: var(--saloum-blue);
+  transform: scaleX(1);
+}
+
+.journey__altitude {
+  margin: 0;
+  color: var(--faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.journey__altitude strong {
+  display: inline-block;
+  min-width: 6ch;
+  font-weight: 400;
+  color: var(--white);
+  text-align: right;
+}
+
+/* Vidéos (Higgsfield / tournage) */
+.journey__videos,
+.journey__video {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+}
+
+.journey__video {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.journey__video--portrait {
+  display: none;
+}
+
+@media (orientation: portrait) and (max-width: 900px) {
+  .journey__video--paysage {
+    display: none;
+  }
+
+  .journey__video--portrait {
+    display: block;
+  }
+}
+
+.journey__video video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.journey__video figcaption {
+  position: absolute;
+  right: var(--gutter);
+  top: 6.5rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.6);
+}
+
+/* Le blanc des nuages, d'où naît la photographie */
+.journey__whiteout {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 45%, #fffdf8, #e9eef4);
+  opacity: var(--white, 0);
+}
+
+.journey__arrival {
+  position: absolute;
+  inset: 0;
+  opacity: var(--arrive, 0);
+}
+
+.journey__photo {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  transform: scale(var(--zoom, 1.24));
+  transform-origin: 50% 40%;
+}
+
+.journey__photo img {
+  object-fit: cover;
+  object-position: 50% 35%;
+}
+
+/* Écrans larges : le visage glisse vers la droite, le titre garde la gauche. */
+@media (min-aspect-ratio: 1/1) {
+  .journey__photo img {
+    transform: translateX(16%) scale(1.35);
+    transform-origin: 50% 40%;
+  }
+}
+
+.journey__photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, rgb(12 13 35 / 0.88), rgb(12 13 35 / 0.1) 55%),
+    linear-gradient(to bottom, rgb(12 13 35 / 0.55), transparent 22%);
+}
+
+.journey__arrival-copy {
+  position: absolute;
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: 9svh;
+  opacity: var(--copy, 0);
+  transform: translateY(calc((1 - var(--copy, 0)) * 24px));
+}
+
+.journey__logo {
+  display: block;
+  width: clamp(120px, 12vw, 180px);
+  height: auto;
+  margin-bottom: 1.8rem;
+}
+
+.journey__headline {
+  max-width: 14ch;
+  margin: 0;
+  font-size: clamp(2.6rem, 7vw, 7.6rem);
+  font-weight: 300;
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+}
+
+/* ==========================================================================
+   APRÈS LE VOYAGE — le site, en plein jour (structure inspirée de seedcharity.com)
+   ========================================================================== */
+
+.fh {
+  --paper: var(--white);
+  --mist: #f1f7fb; /* blanc teinté Hope Blue (7 %) */
+  --ink-dark: var(--midnight);
+  --ink-title: var(--deep-blue);
+  --ink-soft: rgb(12 13 35 / 0.64);
+  --line: rgb(0 64 109 / 0.14);
+  position: relative;
+  z-index: 2;
+  background: var(--paper);
+  color: var(--ink-dark);
+}
+
+/* Boutons sur fond clair (Hope Blue plein, contour Deep Blue). */
+.fh .button--solid {
+  background: var(--hope-blue);
+  border-color: var(--hope-blue);
+  color: var(--white);
+}
+
+.fh .button--solid:hover,
+.fh .button--solid:focus-visible {
+  background: var(--deep-blue);
+  border-color: var(--deep-blue);
+  box-shadow: 0 14px 40px -14px rgb(51 146 202 / 0.7);
+}
+
+.fh .button--outline {
+  color: var(--ink-title);
+  border-color: rgb(0 64 109 / 0.35);
+}
+
+.fh .button--outline:hover {
+  border-color: var(--ink-title);
+}
+
+.fh-act .button--outline {
+  color: var(--white);
+  border-color: rgb(255 255 255 / 0.5);
+}
+
+.fh-act .button--outline:hover {
+  border-color: var(--white);
+}
+
+/* La vague des roll-ups */
+/* Posée sur le bas de la photo d'arrivée, comme sur les roll-ups. */
+.fh-transition {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(-1 * clamp(90px, 12vw, 180px) + 1px);
+  height: clamp(90px, 12vw, 180px);
+  pointer-events: none;
+}
+
+.fh-wave {
+  display: block;
+  width: 100%;
+  height: clamp(90px, 12vw, 180px);
+  overflow: visible;
+}
+
+.fh-transition .fh-wave {
+  position: absolute;
+  inset: 0;
+}
+
+.fh-wave__fill {
+  fill: var(--paper);
+}
+
+.fh-wave__line {
+  fill: none;
+  stroke-width: 2.4;
+  vector-effect: non-scaling-stroke;
+}
+
+.fh-wave__line--deep {
+  stroke: var(--deep-blue);
+}
+
+.fh-wave__line--light {
+  stroke: var(--saloum-blue);
+}
+
+.fh-wave--flip {
+  transform: scaleY(-1);
+  margin-bottom: -1px;
+  background: var(--midnight);
+}
+
+.fh-wave--flip .fh-wave__fill {
+  fill: var(--paper);
+}
+
+/* Sections */
+.fh-section {
+  padding: clamp(4.5rem, 9vw, 9rem) var(--gutter);
+}
+
+.fh-head {
+  max-width: 34rem;
+}
+
+.fh-sup {
+  margin: 0 0 0.9rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--hope-blue);
+}
+
+.fh-sup--light {
+  color: var(--saloum-blue);
+}
+
+.fh-title {
+  margin: 0;
+  font-size: clamp(2.1rem, 4.2vw, 3.8rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  color: var(--ink-title);
+}
+
+.fh-text {
+  max-width: 28rem;
+  margin: 1.2rem 0 0;
+  color: var(--ink-soft);
+  font-weight: 400;
+}
+
+.fh-title--center,
+.fh-text--center {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.fh-link {
+  position: relative;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--ink-title);
+  text-decoration: none;
+  background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
+  padding-bottom: 2px;
+  transition: background-size 500ms var(--ease-expo), color 300ms var(--ease);
+}
+
+.fh-link:hover,
+.fh-link:focus-visible {
+  color: var(--hope-blue);
+  background-size: 0% 1px;
+  background-position: 100% 100%;
+}
+
+.fh-link--strong {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.fh-center {
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+}
+
+.fh-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.2rem;
+  margin-top: 2.6rem;
+}
+
+/* Manifeste */
+.fh-manifesto {
+  padding-top: clamp(3rem, 6vw, 6rem);
+}
+
+.fh-manifesto__text {
+  max-width: 22ch;
+  margin: 0;
+  font-size: clamp(2.2rem, 5.4vw, 5.6rem);
+  font-weight: 300;
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  color: var(--ink-title);
+}
+
+/* Projet à la une */
+.fh-featured__card {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  max-width: 1180px;
+  margin: 0 auto;
+  background: var(--mist);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 40px 80px -50px rgb(0 64 109 / 0.45);
+}
+
+.fh-featured__media {
+  position: relative;
+  min-height: clamp(280px, 34vw, 460px);
+  overflow: hidden;
+}
+
+.fh-featured__media img {
+  object-fit: cover;
+}
+
+.fh-ring {
+  position: absolute;
+  left: 1.5rem;
+  bottom: 1.5rem;
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  font-weight: 700;
+  color: var(--white);
+  background: conic-gradient(var(--hope-blue) calc(var(--p) * 360deg), rgb(255 255 255 / 0.35) 0);
+}
+
+.fh-featured__body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(2rem, 4vw, 3.5rem);
+}
+
+.fh-featured__title {
+  margin: 0;
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: var(--ink-title);
+}
+
+.fh-featured__text {
+  margin: 1rem 0 0;
+  color: var(--ink-soft);
+  font-weight: 400;
+}
+
+.fh-featured__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2.2rem;
+}
+
+/* Bandeau */
+.fh-marquee {
+  overflow: hidden;
+  padding: clamp(1rem, 2vw, 2rem) 0;
+  border-block: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.fh-marquee__track {
+  display: flex;
+  width: max-content;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+.fh-marquee__track span {
+  padding-right: 0.4em;
+  font-size: clamp(3rem, 9vw, 9rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: transparent;
+  -webkit-text-stroke: 1.2px var(--hope-blue);
+}
+
+.fh-marquee__track em {
+  font-style: normal;
+  color: var(--saloum-blue);
+  -webkit-text-stroke: 0;
+}
+
+/* Carrousels */
+.fh-split,
+.fh-moments {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.36fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: start;
+  padding-right: 0;
+}
+
+.fh-moments {
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.36fr);
+  padding-left: 0;
+  padding-right: var(--gutter);
+  background: var(--mist);
+  align-items: center;
+}
+
+.fh-split__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.fh-nav {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.fh-nav__btn {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--hope-blue);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--hope-blue);
+  cursor: pointer;
+  transition: background 300ms var(--ease), color 300ms var(--ease), transform 300ms var(--ease-expo);
+}
+
+.fh-nav__btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.fh-nav__btn:hover,
+.fh-nav__btn:focus-visible {
+  background: var(--hope-blue);
+  color: var(--white);
+  transform: scale(1.06);
+}
+
+.fh-viewport {
+  overflow: hidden;
+  padding: 1rem 0 2.5rem;
+}
+
+.fh-viewport--left {
+  padding-left: var(--gutter);
+}
+
+.fh-track {
+  display: flex;
+  gap: clamp(1rem, 2vw, 1.6rem);
+  width: max-content;
+  margin: 0;
+  padding: 0 var(--gutter) 0 0;
+  list-style: none;
+  touch-action: pan-y;
+}
+
+.fh-card {
+  display: flex;
+  flex-direction: column;
+  width: clamp(260px, 26vw, 360px);
+  background: var(--paper);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px -36px rgb(0 64 109 / 0.5);
+  transition: transform 600ms var(--ease-expo), box-shadow 600ms var(--ease-expo);
+  user-select: none;
+}
+
+.fh-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 34px 70px -34px rgb(0 64 109 / 0.6);
+}
+
+.fh-card__media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+
+.fh-card__media img {
+  object-fit: cover;
+  transition: transform 1.2s var(--ease-expo);
+  pointer-events: none;
+}
+
+.fh-card:hover .fh-card__media img {
+  transform: scale(1.07);
+}
+
+.fh-card__tag {
+  margin: 0;
+  padding: 0.35rem 1.2rem;
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--deep-blue);
+  background: rgb(61 178 222 / 0.16);
+}
+
+.fh-card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 1.4rem 1.2rem 1.4rem;
+}
+
+.fh-card__title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--ink-title);
+}
+
+.fh-card__text {
+  flex: 1;
+  margin: 0.6rem 0 1.4rem;
+  color: var(--ink-soft);
+  font-weight: 400;
+  font-size: 0.95rem;
+}
+
+.fh-card__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.fh-card .button {
+  min-width: 0;
+  padding: 0.75rem 1.2rem;
+  font-size: 0.66rem;
+}
+
+.fh-moment {
+  position: relative;
+  width: clamp(190px, 17vw, 240px);
+  aspect-ratio: 9 / 15;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 24px 50px -30px rgb(0 64 109 / 0.6);
+  user-select: none;
+}
+
+.fh-moment:nth-child(even) {
+  margin-top: 2.5rem;
+}
+
+.fh-moment img {
+  object-fit: cover;
+  pointer-events: none;
+  transition: transform 1.2s var(--ease-expo);
+}
+
+.fh-moment:hover img {
+  transform: scale(1.08);
+}
+
+.fh-moment__caption {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 2.4rem 0.9rem 0.9rem;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: var(--white);
+  background: linear-gradient(to top, rgb(12 13 35 / 0.8), transparent);
+  transform: translateY(30%);
+  opacity: 0;
+  transition: transform 600ms var(--ease-expo), opacity 600ms var(--ease-expo);
+}
+
+.fh-moment:hover .fh-moment__caption {
+  transform: none;
+  opacity: 1;
+}
+
+/* Événements */
+.fh-events__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(1rem, 2vw, 1.6rem);
+  margin: clamp(2.5rem, 5vw, 4rem) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fh-event {
+  position: relative;
+  padding: 1.4rem;
+  border-radius: 6px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  transform-style: preserve-3d;
+  transition: box-shadow 500ms var(--ease-expo), border-color 500ms var(--ease);
+}
+
+.fh-event::after {
+  content: "";
+  position: absolute;
+  inset: auto 1.4rem 0;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: var(--accent);
+  transform: scaleX(0.25);
+  transform-origin: left;
+  transition: transform 700ms var(--ease-expo);
+}
+
+.fh-event:hover {
+  border-color: transparent;
+  box-shadow: 0 30px 60px -36px rgb(0 64 109 / 0.55);
+}
+
+.fh-event:hover::after {
+  transform: scaleX(1);
+}
+
+.fh-event__logo {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 2 / 1;
+  margin-bottom: 1.2rem;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--mist);
+  transform: translateZ(30px);
+}
+
+.fh-event__logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.fh-event__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ink-title);
+}
+
+.fh-event__text {
+  margin: 0.4rem 0 1rem;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  font-weight: 400;
+}
+
+.fh-event__date {
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-title);
+}
+
+/* Agir : grand plan */
+.fh-act {
+  position: relative;
+  display: grid;
+  min-height: 115svh;
+  align-items: end;
+  overflow: hidden;
+  color: var(--white);
+  background: var(--paper);
+}
+
+.fh-act__media {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  will-change: clip-path;
+}
+
+.fh-act__media img {
+  object-fit: cover;
+}
+
+.fh-act__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgb(12 13 35 / 0.88), rgb(12 13 35 / 0.15) 60%);
+}
+
+.fh-act__copy {
+  position: relative;
+  padding: 0 var(--gutter) clamp(4rem, 10vh, 8rem);
+}
+
+.fh-act__title {
+  max-width: 16ch;
+  margin: 0;
+  font-size: clamp(2.4rem, 6vw, 6rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+
+/* Ambassadeurs, parrains, réseaux */
+.fh-people {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(1rem, 2vw, 1.6rem);
+  margin: clamp(2.5rem, 5vw, 3.5rem) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fh-person {
+  display: grid;
+  justify-items: start;
+  gap: 0.35rem;
+  padding: 1.4rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--paper);
+}
+
+.fh-person__avatar {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 0.8rem;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  background: linear-gradient(135deg, var(--deep-blue), var(--hope-blue));
+}
+
+.fh-person__name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ink-title);
+}
+
+.fh-person__role {
+  font-size: 0.86rem;
+  color: var(--ink-soft);
+}
+
+@media (max-width: 900px) {
+  .fh-people {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.fh-social {
+  background: var(--mist);
+  text-align: center;
+}
+
+.fh-social__list {
+  display: flex;
+  justify-content: center;
+  gap: clamp(1.5rem, 5vw, 4rem);
+  margin: 2.6rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fh-social__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--ink-title);
+  text-decoration: none;
+}
+
+.fh-social__icon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow: 0 16px 40px -24px rgb(0 64 109 / 0.6);
+  transition: transform 500ms var(--ease-expo), background 300ms var(--ease), color 300ms var(--ease);
+}
+
+.fh-social__icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.fh-social__item:hover .fh-social__icon,
+.fh-social__item:focus-visible .fh-social__icon {
+  transform: translateY(-6px) rotate(-6deg);
+  background: var(--hope-blue);
+  color: var(--white);
+}
+
+/* En-tête sur fond clair : fond blanc translucide pour la lisibilité. */
+[data-tone="light"] .site-header--immersive {
+  background: rgb(255 255 255 / 0.88);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 1px 0 rgb(0 64 109 / 0.08);
+  transition: background 400ms var(--ease);
+}
+
+[data-tone="light"] .site-header--immersive .site-header__bar {
+  opacity: 1;
+}
+
+[data-tone="light"] .site-nav__sub {
+  background: rgb(255 255 255 / 0.97);
+  border-color: rgb(0 64 109 / 0.1);
+}
+
+[data-tone="light"] .site-nav__sublink {
+  color: rgb(12 13 35 / 0.7);
+}
+
+[data-tone="light"] .site-nav__sublink:hover,
+[data-tone="light"] .site-nav__sublink[aria-current="page"] {
+  color: var(--deep-blue);
+}
+
+@media (max-width: 1000px) {
+  .fh-events__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .fh-featured__card,
+  .fh-split,
+  .fh-moments {
+    grid-template-columns: 1fr;
+  }
+
+  .fh-split,
+  .fh-moments {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .fh-split__intro,
+  .fh-moments__intro {
+    padding: 0 var(--gutter);
+  }
+
+  .fh-viewport {
+    padding-left: var(--gutter);
+  }
+
+  .fh-moments__intro {
+    order: -1;
+  }
+}
+
+@media (max-width: 560px) {
+  .fh-events__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fh-social__list {
+    gap: 1.4rem;
+  }
+}
+
+/* ---------- Mobile (voyage) ---------- */
+
+@media (max-width: 900px) {
+  .journey__hud {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .journey__chapters {
+    gap: 1rem;
+    font-size: 0.58rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journey__cue-line::after {
+    animation: none;
+  }
+
+  .journey__photo {
+    transform: none;
+  }
+}
+
+/* Bouton du menu mobile, lisible sur fond clair (sauf menu ouvert, plein écran sombre). */
+[data-tone="light"] .site-header--immersive:not(.is-open) .site-header__toggle {
+  color: var(--midnight);
+}
+
+[data-tone="light"] .site-header--immersive.is-open {
+  background: none;
+  backdrop-filter: none;
+}
+
+[data-tone="light"] .site-header--immersive.is-open .logo--on-light {
+  display: none;
+}
+
+[data-tone="light"] .site-header--immersive.is-open .logo--on-dark {
+  display: block;
+}
+
+[data-tone="light"] .site-header--immersive.is-open .site-nav {
+  color: var(--white);
+}
+
+/* ---------- Carrousel « FOR HOPE » : les photos à travers les lettres ---------- */
+
+.lc {
+  position: relative;
+  padding: clamp(5rem, 9vw, 8rem) var(--gutter) clamp(3rem, 6vw, 5rem);
+  overflow: hidden;
+  background: var(--paper);
+}
+
+.lc-stage {
+  display: flex;
+  justify-content: center;
+}
+
+.lc-word {
+  display: block;
+  width: min(100%, 1100px);
+  height: auto;
+  overflow: visible;
+  transform-origin: 50% 40%;
+  will-change: transform;
+}
+
+.lc-letters {
+  font-family: var(--font);
+  font-size: 300px;
+  font-weight: 900;
+  letter-spacing: -14px;
+}
+
+.lc-placeholder {
+  fill: var(--mist);
+}
+
+.lc-slide {
+  will-change: opacity, transform;
+}
+
+.lc-ui {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 1.5rem 2rem;
+  max-width: 1100px;
+  margin: clamp(2rem, 4vw, 3rem) auto 0;
+}
+
+.lc-caption {
+  margin: 0;
+  max-width: 22rem;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+.lc-count {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ink-title);
+  font-variant-numeric: tabular-nums;
+}
+
+.lc-count span {
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+
+.lc-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.lc-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.lc-dot {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.lc-dot::before,
+.lc-dot span {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 3px;
+  margin-top: -1.5px;
+  border-radius: 3px;
+}
+
+.lc-dot::before {
+  background: var(--line);
+}
+
+.lc-dot span {
+  background: var(--hope-blue);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.lc-dot.is-active span {
+  animation: lc-fill linear forwards;
+}
+
+.lc-dot:hover::before,
+.lc-dot:focus-visible::before {
+  background: rgb(0 64 109 / 0.4);
+}
+
+@keyframes lc-fill {
+  to { transform: scaleX(1); }
+}
+
+.lc-ctas {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+  gap: 0.8rem;
+}
+
+.lc-ctas .button {
+  min-width: 0;
+  padding-inline: 1.4rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .lc-ui {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .lc-ctas {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .lc-dots {
+    gap: 3px;
+  }
+
+  .lc-dot {
+    width: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lc-dot.is-active span {
+    animation: none;
+    transform: scaleX(1);
+  }
+}
+
+/* ---------- Transitions d'entrée de section (état final = rendu inchangé) ---------- */
+
+.fh-section,
+.lc {
+  --line-in: 1;
+  --line-out: 1;
+}
+
+.js .fh-section,
+.js .lc {
+  --line-in: 0;
+  --line-out: 0;
+}
+
+.fh-section::after,
+.lc::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--saloum-blue), var(--hope-blue));
+  transform-origin: left;
+  transform: scaleX(calc(var(--line-in) - var(--line-out)));
+  translate: calc(var(--line-out) * 100%) 0;
+  pointer-events: none;
+}
+
+.fh-section {
+  position: relative;
+}
+
+/* Fonds bleu pâle : couleur portée par un calque qui glisse depuis la gauche. */
+[data-sweep] {
+  --sweep: 1;
+  isolation: isolate;
+  background: transparent !important;
+}
+
+.js [data-sweep] {
+  --sweep: 0;
+}
+
+[data-sweep]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--mist);
+  transform-origin: left;
+  transform: scaleX(var(--sweep));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .fh-section,
+  .js .lc {
+    --line-in: 1;
+    --line-out: 1;
+  }
+
+  .js [data-sweep] {
+    --sweep: 1;
+  }
+}
+
+/* ==========================================================================
+   GALERIE INCURVÉE (TiltedGridHero) — juste après la vidéo d'introduction
+   ========================================================================== */
+
+.arc {
+  position: relative;
+  z-index: 2;
+  /* La section remonte en fondu sur le bas de la photo d'arrivée : aucun bord visible. */
+  /* (limité à la bande sous le titre d'arrivée, qui reste intact) */
+  margin-top: -8svh;
+  padding: 8svh 0 clamp(5rem, 9vw, 8rem);
+  overflow: hidden;
+  color: var(--white);
+  background:
+    radial-gradient(ellipse 60% 45% at 50% 66%, rgb(0 64 109 / 0.55), transparent 70%),
+    linear-gradient(to bottom, rgb(12 13 35 / 0) 0, var(--midnight) 8svh);
+}
+
+.arc__head {
+  position: relative;
+  max-width: 46rem;
+  margin: 0 auto clamp(2.5rem, 5vw, 4rem);
+  padding: 0 var(--gutter);
+  text-align: center;
+}
+
+.arc__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 0 0 1.2rem;
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--gold-mid);
+}
+
+.arc__eyebrow::before,
+.arc__eyebrow::after {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.7;
+}
+
+.arc__title {
+  margin: 0;
+  font-size: clamp(1.9rem, 4.2vw, 3.9rem);
+  font-weight: 300;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+}
+
+.arc__lede {
+  margin: 1.1rem auto 0;
+  max-width: 30rem;
+  font-size: 0.98rem;
+  color: rgb(255 255 255 / 0.66);
+}
+
+
+/* ==========================================================================
+   LA SORTIE — en bas de l'accueil, on quitte la Terre (même scène WebGL)
+   ========================================================================== */
+
+.outro {
+  position: relative;
+  z-index: 1;
+  height: var(--len, 380svh);
+  /* transparent : la planète (canvas fixe) se voit au travers */
+  background: transparent;
+}
+
+.outro__stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* raccord : au tout début, l'écran est encore dans le blanc des nuages */
+.outro__veil {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 45%, #fffdf8, #e9eef4);
+  opacity: var(--veil, 1);
+}
+
+.outro .journey__caption {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.outro__altitude {
+  position: absolute;
+  right: var(--gutter);
+  bottom: 5.5svh;
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.4);
+  font-variant-numeric: tabular-nums;
+  opacity: 0;
+}
+
+.outro__altitude strong {
+  display: inline-block;
+  min-width: 6ch;
+  font-weight: 400;
+  color: var(--white);
+  text-align: right;
+}
+
+.outro__end {
+  position: absolute;
+  left: var(--gutter);
+  bottom: 12svh;
+  display: grid;
+  justify-items: start;
+  gap: 1.2rem;
+  max-width: 34rem;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.outro__end[style*="visible"] {
+  pointer-events: auto;
+}
+
+.outro__logo {
+  width: clamp(120px, 11vw, 170px);
+  height: auto;
+}
+
+.outro__line {
+  margin: 0;
+  font-size: clamp(1.6rem, 3vw, 2.8rem);
+  font-weight: 300;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+}
+
+.outro__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem 1rem;
+  margin-top: 0.6rem;
+}
+
+/* Sur l'accueil, le blanc des sections enchaîne directement sur le blanc des nuages de la sortie. */
+.home2 .fh-wave--flip {
+  display: none;
+}
+
+/* Accueil : pied de page transparent, la Terre de la sortie reste visible derrière. */
+body:has(.home2) .ft {
+  background: linear-gradient(to bottom, transparent 0%, rgb(12 13 35 / 0.35) 70%, rgb(12 13 35 / 0.7) 100%);
+}
+
+body:has(.home2) .ft__glow {
+  display: none;
+}
+
+body:has(.home2) .ft__bottom {
+  border-top-color: rgb(255 255 255 / 0.16);
+}
+
+body:has(.home2) .ft__text,
+body:has(.home2) .ft__link {
+  text-shadow: 0 1px 12px rgb(12 13 35 / 0.8);
+}

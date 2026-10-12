@@ -1,0 +1,20 @@
+# Dépendances et builds
+node_modules/
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+.DS_Store
+.env*.local
+
+# Sources graphiques et documents lourds : à conserver hors du dépôt
+*.ai
+*.zip
+/FH_CharteGGraphique2022.pdf
+/RS/
+/rendu/
+
+# Outils locaux de l'assistant
+/.claude/
+/.agents/
+/skills-lock.json

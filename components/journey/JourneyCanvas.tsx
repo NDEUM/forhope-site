@@ -8,6 +8,7 @@ import { JourneyCamera } from "@/components/journey/JourneyCamera";
 import { CloudPass } from "@/components/journey/CloudPass";
 import { Earth } from "@/components/journey/earth/Earth";
 import { Atmosphere, Clouds, SkyDome, Stars } from "@/components/journey/earth/Sky";
+import { LightPath } from "@/components/journey/earth/LightPath";
 import { journey } from "@/lib/journey-store";
 import { smoothstep } from "@/lib/math";
 import { useQualityTier } from "@/hooks/useQualityTier";
@@ -94,6 +95,7 @@ export default function JourneyCanvas() {
       <SkyDome />
       <Earth tier={tier} onReady={onReady} />
       <Clouds />
+      <LightPath />
       <Atmosphere />
       <CloudPass />
       <Pause />

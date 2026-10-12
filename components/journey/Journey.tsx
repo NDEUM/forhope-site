@@ -7,8 +7,8 @@ import { VideoLayer } from "@/components/journey/VideoLayer";
 
 /** Les étapes affichées dans l'index de chapitres (à gauche). */
 const chapters = [
-  { label: "La Terre", at: 0 },
-  { label: "Afrique", at: 0.24 },
+  { label: "France", at: 0 },
+  { label: "Afrique", at: 0.3 },
   { label: "Sénégal", at: 0.62 },
   { label: "For Hope", at: 0.95 },
 ];

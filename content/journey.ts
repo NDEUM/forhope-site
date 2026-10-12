@@ -31,19 +31,24 @@ export interface Shot {
 export const SENEGAL = { lat: 14.45, lon: -14.6 };
 
 /**
- * Plan de vol. Le début est lent (le visiteur prend la mesure de la
- * planète), la descente accélère au-dessus de l'Afrique, puis se pose.
+ * Plan de vol : France (point de départ) → traversée de la Méditerranée et du
+ * Sahara → Afrique → Afrique de l'Ouest → Sénégal (cœur des actions). Les
+ * deux derniers plans sont inchangés : la vidéo Higgsfield démarre exactement
+ * sur l'image du plan à 0,83.
  */
 export const shots: Shot[] = [
-  // Très haute altitude : la Terre entière, l'Afrique dans la lumière du jour.
-  { at: 0, camera: { lat: 4, lon: -22, alt: 2.1 }, target: { lat: 20, lon: -38, alt: 0.15 }, fov: 34 },
-  { at: 0.14, camera: { lat: 5, lon: -14, alt: 1.55 }, target: { lat: 14, lon: -20, alt: -0.3 }, fov: 34 },
+  // La France vue de très haut, l'Europe dans la lumière ; à gauche, le noir de l'espace.
+  { at: 0, camera: { lat: 38, lon: -14, alt: 1.75 }, target: { lat: 52, lon: -22, alt: 0.12 }, fov: 34 },
+  // La caméra se rapproche du territoire français.
+  { at: 0.15, camera: { lat: 41.5, lon: 1.2, alt: 0.42 }, target: { lat: 47, lon: 2.4, alt: -0.06 }, fov: 36 },
+  // Elle prend de la hauteur et part vers le sud : Méditerranée, puis Sahara.
+  { at: 0.3, camera: { lat: 30, lon: -2, alt: 0.85 }, target: { lat: 20, lon: 2, alt: -0.25 }, fov: 35 },
   // L'Afrique remplit le cadre.
-  { at: 0.32, camera: { lat: 6, lon: -6, alt: 0.95 }, target: { lat: 8, lon: 12, alt: -0.25 }, fov: 34 },
+  { at: 0.43, camera: { lat: 8, lon: -6, alt: 0.95 }, target: { lat: 8, lon: 12, alt: -0.25 }, fov: 34 },
   // L'Afrique de l'Ouest : la caméra pivote vers l'Atlantique.
-  { at: 0.5, camera: { lat: 9, lon: -11, alt: 0.28 }, target: { lat: 14, lon: -10, alt: -0.04 }, fov: 36 },
+  { at: 0.56, camera: { lat: 9, lon: -11, alt: 0.28 }, target: { lat: 14, lon: -10, alt: -0.04 }, fov: 36 },
   // Le Sénégal.
-  { at: 0.68, camera: { lat: 11.4, lon: -14.2, alt: 0.075 }, target: { lat: 14.6, lon: -14.9, alt: 0 }, fov: 38 },
+  { at: 0.7, camera: { lat: 11.4, lon: -14.2, alt: 0.075 }, target: { lat: 14.6, lon: -14.9, alt: 0 }, fov: 38 },
   // Basse altitude : la caméra s'incline vers l'horizon, face à la côte.
   { at: 0.82, camera: { lat: 13.2, lon: -14.6, alt: 0.034 }, target: { lat: 14.7, lon: -16.6, alt: 0.0 }, fov: 42 },
   // Traversée de la couche de nuages.
@@ -61,11 +66,18 @@ export interface Caption {
 }
 
 export const captions: Caption[] = [
-  { id: "terre", title: "La Terre", meta: "Altitude orbitale", from: 0.03, to: 0.17 },
-  { id: "afrique", title: "Afrique", meta: "30,3 millions de km²", from: 0.24, to: 0.4 },
-  { id: "ouest", title: "Afrique de l'Ouest", meta: "Océan Atlantique", from: 0.44, to: 0.58 },
-  { id: "senegal", title: "Sénégal", meta: "14° N · 14° O", from: 0.62, to: 0.82 },
+  { id: "france", title: "France", meta: "Le point de départ", from: 0.07, to: 0.22 },
+  { id: "afrique", title: "Afrique", meta: "30,3 millions de km²", from: 0.35, to: 0.5 },
+  { id: "senegal", title: "Sénégal", meta: "Le cœur de nos actions", from: 0.62, to: 0.82 },
 ];
+
+/** Le fil de lumière France → Sénégal, tracé pendant le voyage. */
+export const LIGHT_PATH = {
+  from: { lat: 46.6, lon: 2.4 },
+  to: { lat: 14.6, lon: -14.6 },
+  drawFrom: 0.1,
+  drawTo: 0.46,
+};
 
 /** La couche de nuages traversée entre le Sénégal et For Hope. */
 export const CLOUDS = { from: 0.8, peak: 0.94, to: 1 };
@@ -84,11 +96,15 @@ export interface Region {
   /** Altitudes (rayons) entre lesquelles la région remplace la vue globale. */
   fadeFrom: number;
   fadeTo: number;
+  /** Fichier de tracés (Natural Earth) et pays souligné. */
+  geo: string;
+  highlight: string;
 }
 
 export const regions: Region[] = [
-  { id: "west-africa", west: -26, east: -2, south: 4, north: 28, fadeFrom: 0.5, fadeTo: 0.2 },
-  { id: "senegal", west: -18.4, east: -10.6, south: 11.4, north: 17.6, fadeFrom: 0.12, fadeTo: 0.05 },
+  { id: "west-africa", west: -26, east: -2, south: 4, north: 28, fadeFrom: 0.5, fadeTo: 0.2, geo: "/geo/west-africa.json", highlight: "Senegal" },
+  { id: "senegal", west: -18.4, east: -10.6, south: 11.4, north: 17.6, fadeFrom: 0.12, fadeTo: 0.05, geo: "/geo/west-africa.json", highlight: "Senegal" },
+  { id: "france", west: -6, east: 10, south: 41, north: 52, fadeFrom: 0.7, fadeTo: 0.38, geo: "/geo/france.json", highlight: "France" },
 ];
 
 /**

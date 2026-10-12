@@ -31,10 +31,13 @@ const fragmentShader = /* glsl */ `
   uniform sampler2D uWater;
   uniform sampler2D uRegion0;
   uniform sampler2D uRegion1;
+  uniform sampler2D uRegion2;
   uniform vec4 uBounds0; // ouest, est, sud, nord
   uniform vec4 uBounds1;
+  uniform vec4 uBounds2;
   uniform float uMix0;
   uniform float uMix1;
+  uniform float uMix2;
   uniform vec3 uSun;
   uniform vec3 uHaze;
   uniform float uHazeAmount;
@@ -69,8 +72,11 @@ const fragmentShader = /* glsl */ `
     float w0, w1;
     vec3 r0 = region(uRegion0, uBounds0, lon, lat, w0).rgb;
     vec3 r1 = region(uRegion1, uBounds1, lon, lat, w1).rgb;
+    float w2;
+    vec3 r2 = region(uRegion2, uBounds2, lon, lat, w2).rgb;
     day = mix(day, r0, w0 * uMix0);
     day = mix(day, r1, w1 * uMix1);
+    day = mix(day, r2, w2 * uMix2);
 
     float water = texture2D(uWater, vUv).r;
     float h = texture2D(uTopo, vUv).r * (1.0 - water);
@@ -152,10 +158,13 @@ export function Earth({ tier, onReady }: { tier: QualityTier; onReady?: () => vo
           uWater: { value: blank() },
           uRegion0: { value: blank() },
           uRegion1: { value: blank() },
+          uRegion2: { value: blank() },
           uBounds0: { value: new THREE.Vector4(regions[0].west, regions[0].east, regions[0].south, regions[0].north) },
           uBounds1: { value: new THREE.Vector4(regions[1].west, regions[1].east, regions[1].south, regions[1].north) },
+          uBounds2: { value: new THREE.Vector4(regions[2].west, regions[2].east, regions[2].south, regions[2].north) },
           uMix0: { value: 0 },
           uMix1: { value: 0 },
+          uMix2: { value: 0 },
           uSun: { value: SUN_DIRECTION.clone() },
           uHaze: { value: new THREE.Color(0.62, 0.74, 0.88) },
           uHazeAmount: { value: 0 },
@@ -201,15 +210,17 @@ export function Earth({ tier, onReady }: { tier: QualityTier; onReady?: () => vo
       }
 
       // 3. Les cartes régionales ensuite (utiles seulement à la descente).
-      const geo: GeoData = await fetch("/geo/west-africa.json").then((r) => r.json());
+      const files = [...new Set(regions.map((r) => r.geo))];
+      const geos = new Map<string, GeoData>(await Promise.all(files.map(async (f) => [f, (await fetch(f).then((r) => r.json())) as GeoData] as const)));
       const dayImg = (u.uDay.value as THREE.Texture).image as HTMLImageElement;
       const size = tier === "high" ? 2048 : 1024;
-      const textures = regions.map((r) => paintRegion(r, dayImg, geo, size));
+      const textures = regions.map((r) => paintRegion(r, dayImg, geos.get(r.geo)!, size, r.highlight));
       if (cancelled) return textures.forEach((t) => t.dispose());
       textures.forEach((t) => (t.anisotropy = aniso));
       created.push(...textures);
       u.uRegion0.value = textures[0];
       u.uRegion1.value = textures[1];
+      u.uRegion2.value = textures[2];
     })().catch(() => {
       // Sans textures, la planète reste une sphère sombre : le récit HTML suffit.
       setReady(true);
@@ -228,6 +239,7 @@ export function Earth({ tier, onReady }: { tier: QualityTier; onReady?: () => vo
     const u = material.uniforms;
     u.uMix0.value = 1 - smoothstep(regions[0].fadeTo, regions[0].fadeFrom, alt);
     u.uMix1.value = 1 - smoothstep(regions[1].fadeTo, regions[1].fadeFrom, alt);
+    u.uMix2.value = 1 - smoothstep(regions[2].fadeTo, regions[2].fadeFrom, alt);
     u.uHazeAmount.value = 1 - smoothstep(0.01, 0.06, alt);
   });
 

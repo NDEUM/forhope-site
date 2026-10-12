@@ -15,18 +15,37 @@ export default function ContactPage() {
         <dl className="contact-list">
           <div>
             <dt>E-mail</dt>
-            <dd>adresse@exemple.org</dd>
+            <dd>
+              <a href={`mailto:${site.email}`}>{site.email}</a>
+            </dd>
+          </div>
+          <div>
+            <dt>Téléphone</dt>
+            <dd>
+              <a href={site.phone.href}>{site.phone.display}</a>
+            </dd>
           </div>
           <div>
             <dt>Site</dt>
-            <dd>{site.url.replace("https://", "")}</dd>
+            <dd>
+              <a href={site.url}>{site.url.replace("https://", "")}</a>
+            </dd>
           </div>
           <div>
             <dt>Réseaux</dt>
-            <dd>{site.socials.map((s) => s.label).join(" · ")}</dd>
+            <dd>
+              {site.socials.map((s, i) => (
+                <span key={s.label}>
+                  {i > 0 && " · "}
+                  <a href={s.href} target="_blank" rel="noopener noreferrer">
+                    {s.label}
+                  </a>
+                </span>
+              ))}
+            </dd>
           </div>
         </dl>
-        <Placeholder>E-mail, adresse et liens des réseaux à fournir — formulaire à brancher ensuite</Placeholder>
+        <Placeholder>Adresse postale à fournir — formulaire de contact à brancher ensuite</Placeholder>
       </PageSection>
     </PageShell>
   );

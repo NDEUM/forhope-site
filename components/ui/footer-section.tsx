@@ -89,16 +89,22 @@ export function FooterSection() {
           <h3 className="ft__heading">Contact</h3>
           <ul className="ft__list">
             <li>
+              <span className="ft__label">E-mail</span>
+              <a href={`mailto:${site.email}`} className="ft__link">
+                {site.email}
+              </a>
+            </li>
+            <li>
+              <span className="ft__label">Téléphone</span>
+              <a href={site.phone.href} className="ft__link">
+                {site.phone.display}
+              </a>
+            </li>
+            <li>
               <span className="ft__label">Site officiel</span>
               <a href={site.url} className="ft__link">
                 {domain}
               </a>
-            </li>
-            <li>
-              <span className="ft__label">Écrire à l&apos;association</span>
-              <Link href="/contact" className="ft__link">
-                Page Contact
-              </Link>
             </li>
           </ul>
         </div>

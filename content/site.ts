@@ -4,6 +4,9 @@ export const site = {
   url: "https://www.forhopeassociation.org",
   description:
     "For Hope Association — un mouvement humain. Une personne, puis une autre : des bénévoles engagés auprès des enfants, des rencontres, des actions et des histoires.",
+  /** Coordonnées officielles (transmises par l'association). */
+  email: "contact@forhopeassociation.org",
+  phone: { display: "+33 6 85 72 00 90", href: "tel:+33685720090" },
   /** Comptes officiels (adresses transmises par l'association). */
   socials: [
     { label: "Instagram", href: "https://www.instagram.com/forhope_association" },

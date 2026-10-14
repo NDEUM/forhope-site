@@ -38,6 +38,7 @@ const fragmentShader = /* glsl */ `
   uniform float uMix0;
   uniform float uMix1;
   uniform float uMix2;
+  uniform float uBright;
   uniform vec3 uSun;
   uniform vec3 uHaze;
   uniform float uHazeAmount;
@@ -84,11 +85,15 @@ const fragmentShader = /* glsl */ `
     vec3 nb = perturb(vWorldPos, n, h * 0.012);
 
     vec3 V = normalize(cameraPosition - vWorldPos);
-    float ndl = dot(nb, uSun);
-    float daylight = smoothstep(-0.12, 0.28, dot(n, uSun));
+    // Vue de très haut (début du voyage), toute la face visible est éclairée :
+    // la lumière « enveloppe » le globe et la nuit disparaît ; elle revient en descendant.
+    float fill = clamp((uBright - 1.0) / 0.42, 0.0, 1.0);
+    float wrap = fill * 2.0;
+    float ndl = (dot(nb, uSun) + wrap) / (1.0 + wrap);
+    float daylight = max(smoothstep(-0.12, 0.28, dot(n, uSun)), fill * 0.9);
 
     // Lumière du soleil + un peu de ciel diffus.
-    vec3 lit = day * (max(ndl, 0.0) * 1.35 + 0.035);
+    vec3 lit = day * (max(ndl, 0.0) * 1.35 * uBright + 0.035 + fill * 0.08);
 
     // Reflet du soleil sur les océans.
     vec3 H = normalize(uSun + V);
@@ -96,6 +101,8 @@ const fragmentShader = /* glsl */ `
     // reflet argenté : un cœur discret et un large voile, comme vu depuis l'orbite
     float spec = (pow(nh, 900.0) * 0.28 + pow(nh, 60.0) * 0.07) * water * daylight;
     lit += vec3(0.85, 0.9, 1.0) * spec;
+    // vue de très haut : l'océan profond s'éclaircit un peu, pour ne pas paraître noir
+    lit += water * fill * vec3(0.015, 0.05, 0.12);
 
     // Lumières des villes dans la nuit.
     vec3 night = texture2D(uNight, vUv).rgb;
@@ -165,6 +172,7 @@ export function Earth({ tier, onReady }: { tier: QualityTier; onReady?: () => vo
           uMix0: { value: 0 },
           uMix1: { value: 0 },
           uMix2: { value: 0 },
+          uBright: { value: 1 },
           uSun: { value: SUN_DIRECTION.clone() },
           uHaze: { value: new THREE.Color(0.62, 0.74, 0.88) },
           uHazeAmount: { value: 0 },
@@ -240,6 +248,7 @@ export function Earth({ tier, onReady }: { tier: QualityTier; onReady?: () => vo
     u.uMix0.value = 1 - smoothstep(regions[0].fadeTo, regions[0].fadeFrom, alt);
     u.uMix1.value = 1 - smoothstep(regions[1].fadeTo, regions[1].fadeFrom, alt);
     u.uMix2.value = 1 - smoothstep(regions[2].fadeTo, regions[2].fadeFrom, alt);
+    u.uBright.value = 1 + 0.42 * smoothstep(0.35, 0.75, alt);
     u.uHazeAmount.value = 1 - smoothstep(0.01, 0.06, alt);
   });
 

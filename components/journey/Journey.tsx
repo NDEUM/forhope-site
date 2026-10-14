@@ -4,13 +4,15 @@ import { photos } from "@/content/media";
 import { JourneyScene } from "@/components/journey/JourneyScene";
 import { JourneyDirector } from "@/components/journey/JourneyDirector";
 import { VideoLayer } from "@/components/journey/VideoLayer";
+import { FlashlightTextReveal } from "@/components/ui/flashlight-text-reveal";
+import { brand } from "@/lib/brand";
 
 /** Les étapes affichées dans l'index de chapitres (à gauche). */
 const chapters = [
   { label: "France", at: 0 },
-  { label: "Afrique", at: 0.3 },
-  { label: "Sénégal", at: 0.62 },
-  { label: "For Hope", at: 0.95 },
+  { label: "Afrique", at: 0.2 },
+  { label: "Sénégal", at: 0.4 },
+  { label: "For Hope", at: 0.94 },
 ];
 
 /**
@@ -20,7 +22,6 @@ const chapters = [
  * canvas. Tout le texte est du HTML accessible.
  */
 const LINES = ["Seul on va plus vite,", "ensemble on va plus", "loin."];
-const WORD_COUNT = LINES.join(" ").split(" ").length;
 
 export function Journey() {
   // La photo du roll-up officiel « Redonnons un sourire aux enfants ».
@@ -31,30 +32,20 @@ export function Journey() {
       <div className="journey__stage">
         <div className="journey__fallback" aria-hidden="true" />
 
-        {/* Titrage d'ouverture, dans le noir à gauche de la Terre : au défilement, les lignes basculent une à une comme les volets d'un tableau mécanique. */}
-        <p className="journey__title">
-          {LINES.map((line, l) => (
-            <span key={l} className="journey__title-line" style={{ ["--l" as string]: l }}>
-              {line.split(" ").map((word, j) => {
-                const i = LINES.slice(0, l).reduce((n, x) => n + x.split(" ").length, 0) + j;
-                return (
-                  <span
-                    key={j}
-                    className="journey__title-letter"
-                    style={{ ["--i" as string]: i, ["--c" as string]: ((i - (WORD_COUNT - 1) / 2) / ((WORD_COUNT - 1) / 2)).toFixed(3), ["--k" as string]: (1 + ((i * 7) % 5) * 0.18).toFixed(2) }}
-                  >
-                    <span>{word}</span>
-                  </span>
-                );
-              })}
-            </span>
-          ))}
-        </p>
+        {/* Titrage d'ouverture, dans le noir à gauche de la Terre : une inscription sur un mur sombre, révélée par un faisceau doré ; au défilement, les lignes basculent une à une comme les volets d'un tableau mécanique. */}
+        <FlashlightTextReveal
+          as="p"
+          text={LINES}
+          className="journey__title"
+          lineClassName="journey__title-line"
+          wordClassName="journey__title-letter"
+          lightColor={brand.goldMid}
+        />
 
         <div className="journey__intro" data-window="-1,-0.5,0.035,0.07">
           <p className="journey__eyebrow">For Hope Association</p>
           <p className="journey__cue">
-            <span>Faites défiler pour descendre</span>
+            <span>Scroller</span>
             <span className="journey__cue-line" aria-hidden="true" />
           </p>
         </div>

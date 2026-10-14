@@ -7,7 +7,7 @@ import * as THREE from "three";
 import { JourneyCamera } from "@/components/journey/JourneyCamera";
 import { CloudPass } from "@/components/journey/CloudPass";
 import { Earth } from "@/components/journey/earth/Earth";
-import { Atmosphere, Clouds, SkyDome, Stars } from "@/components/journey/earth/Sky";
+import { Atmosphere, Clouds, SkyDome, SpaceBackdrop, Stars } from "@/components/journey/earth/Sky";
 import { LightPath } from "@/components/journey/earth/LightPath";
 import { journey } from "@/lib/journey-store";
 import { smoothstep } from "@/lib/math";
@@ -91,7 +91,8 @@ export default function JourneyCanvas() {
       <PerformanceMonitor onDecline={() => setDpr([1, 1])} />
       <Background />
       <JourneyCamera />
-      <Stars count={tier === "high" ? 2600 : 1200} />
+      <SpaceBackdrop />
+      <Stars count={tier === "high" ? 3400 : 1600} />
       <SkyDome />
       <Earth tier={tier} onReady={onReady} />
       <Clouds />

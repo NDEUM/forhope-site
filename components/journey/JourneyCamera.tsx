@@ -73,7 +73,10 @@ export function JourneyCamera() {
       const dev = (window as unknown as { __shot?: Shot }).__shot;
       if (dev) [lat, lon, logAlt, tLat, tLon, tAlt, fovBase] = channels(dev);
     }
-    const alt = Math.exp(logAlt);
+    let alt = Math.exp(logAlt);
+    // Écran vertical : le champ est plus haut, l'horizon apparaîtrait ; au début
+    // du voyage, la caméra se rapproche pour que la Terre remplisse l'écran.
+    if (!journey.outroActive && size.width < size.height) alt *= 1 - 0.38 * smoothstep(0.35, 0.72, alt);
     latLonToVector3(lat, lon, 1 + alt, v.pos);
     latLonToVector3(tLat, tLon, 1 + tAlt, v.target);
 

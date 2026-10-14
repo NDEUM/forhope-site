@@ -52,14 +52,13 @@ html.no-webgl .journey__fallback {
   display: block;
 }
 
-/* Titrage d'ouverture « FOR HOPE » — dans le noir de l'espace, jamais sur la Terre */
+/* Titrage d'ouverture — dans le noir de l'espace, jamais sur la Terre.
+   Une inscription sur un mur sombre (FlashlightTextReveal) : couche éteinte
+   toujours lisible, couche dorée révélée par le faisceau. */
 .journey__title {
   position: absolute;
   left: var(--gutter);
   top: clamp(6rem, 17svh, 11rem);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
   margin: 0;
   font-size: clamp(1.6rem, 2.9vw, 3rem);
   font-weight: 300;
@@ -67,6 +66,70 @@ html.no-webgl .journey__fallback {
   letter-spacing: -0.015em;
   white-space: nowrap;
   pointer-events: none;
+  /* le faisceau s'arrête quand le titre a fini de basculer */
+  --flr-off: var(--title-out, 0);
+}
+
+.flr__text {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0;
+  font: inherit;
+}
+
+/* le texte réel reste sélectionnable */
+.journey__title .flr__text:not(.flr__text--lit) {
+  pointer-events: auto;
+  user-select: text;
+  /* la Terre remplit le cadre : une ombre douce garde le titre lisible */
+  filter: drop-shadow(0 2px 14px rgb(4 5 13 / 0.75)) drop-shadow(0 0 2px rgb(4 5 13 / 0.6));
+}
+
+/* espaces réelles (copie, lecteurs d'écran) sans effet sur la mise en page */
+.flr__sp {
+  font-size: 0;
+}
+
+/* couche dorée : uniquement là où tombe le faisceau */
+.flr__text--lit {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  user-select: none;
+  -webkit-mask-image: radial-gradient(circle var(--fr, 190px) at var(--fx, 30%) var(--fy, 45%), #000 0%, #000 30%, rgb(0 0 0 / 0.4) 65%, transparent 100%);
+  mask-image: radial-gradient(circle var(--fr, 190px) at var(--fx, 30%) var(--fy, 45%), #000 0%, #000 30%, rgb(0 0 0 / 0.4) 65%, transparent 100%);
+  filter: drop-shadow(0 0 12px rgb(232 191 110 / 0.45));
+}
+
+/* le mur : il déborde du bloc pour se fondre dans le noir, et s'efface avec le titre */
+.flr__wall {
+  position: absolute;
+  inset: -50% -6% -50% -14%;
+  width: 120%;
+  height: 200%;
+  pointer-events: none;
+  opacity: calc(1 - var(--title-out, 0) * 1.6);
+}
+
+.flr--nogl .flr__wall {
+  display: none;
+}
+
+.flr--nogl::before {
+  content: "";
+  position: absolute;
+  left: var(--fx, 30%);
+  top: var(--fy, 45%);
+  width: calc(var(--fr, 190px) * 3);
+  height: calc(var(--fr, 190px) * 3);
+  translate: -50% -50%;
+  background: radial-gradient(closest-side, rgb(232 191 110 / 0.14), transparent);
+  pointer-events: none;
+  opacity: calc(1 - var(--title-out, 0) * 1.6);
 }
 
 .journey__title-line {
@@ -85,19 +148,27 @@ html.no-webgl .journey__fallback {
 
 /* les mots d'une ligne glissent d'un cran, en sens alterné, pendant la bascule */
 .journey__title-letter {
+  --c: calc((var(--i) - (var(--n) - 1) / 2) / ((var(--n) - 1) / 2));
   display: inline-block;
   transform: translateX(calc(var(--lo, 0) * (var(--c) * 0.6em)));
 }
 
 .journey__title-letter > span {
   display: inline-block;
-  background: linear-gradient(180deg, #fff 35%, rgb(255 255 255 / 0.55) 100%);
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.82) 35%, rgb(255 255 255 / 0.5) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
 /* Écran vertical (mobile) : le titre reste au-dessus de la Terre, dans le noir. */
+/* lettres dorées sous le faisceau */
+.flr__text--lit .journey__title-letter > span {
+  background: linear-gradient(180deg, #fde79f 20%, #e8bf6e 70%, #deac59 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
 @media (orientation: portrait) and (max-width: 900px) {
   .journey__title {
     top: clamp(5.5rem, 12svh, 8rem);
@@ -174,7 +245,12 @@ html.no-webgl .journey__fallback {
   align-items: center;
   gap: 1rem;
   margin: 2.4rem 0 0;
-  color: var(--soft);
+  /* « Scroller » : plus grand, plus contrasté, lisible au-dessus de la Terre */
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-shadow: 0 1px 10px rgb(4 5 13 / 0.85), 0 0 2px rgb(4 5 13 / 0.7);
 }
 
 .journey__cue-line {

@@ -1,8 +1,8 @@
 /**
  * Photothèque disponible (extraite des roll-ups officiels).
  * `verified` : photo de terrain For Hope identifiable (t-shirts de l'association).
- * Les autres proviennent des supports de communication et doivent être
- * confirmées (origine, droits, autorisations parentales) avant mise en ligne.
+ * Autorisations de diffusion (enfants compris) confirmées par l'association
+ * le 13/10/2026.
  */
 export interface Photo {
   src: string;

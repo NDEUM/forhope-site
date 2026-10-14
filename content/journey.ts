@@ -34,23 +34,24 @@ export const SENEGAL = { lat: 14.45, lon: -14.6 };
  * Plan de vol : France (point de départ) → traversée de la Méditerranée et du
  * Sahara → Afrique → Afrique de l'Ouest → Sénégal (cœur des actions). Les
  * deux derniers plans sont inchangés : la vidéo Higgsfield démarre exactement
- * sur l'image du plan à 0,83.
+ * sur leur image (à 0,5845). France → Sénégal tient en 56 % du défilement,
+ * la traversée des nuages prend le reste.
  */
 export const shots: Shot[] = [
-  // La France vue de très haut, l'Europe dans la lumière ; à gauche, le noir de l'espace.
-  { at: 0, camera: { lat: 38, lon: -14, alt: 1.75 }, target: { lat: 52, lon: -22, alt: 0.12 }, fov: 34 },
+  // L'Europe vue de haut : la Terre remplit tout le cadre.
+  { at: 0, camera: { lat: 40, lon: -6, alt: 0.72 }, target: { lat: 46, lon: 0, alt: -0.5 }, fov: 36 },
   // La caméra se rapproche du territoire français.
-  { at: 0.15, camera: { lat: 41.5, lon: 1.2, alt: 0.42 }, target: { lat: 47, lon: 2.4, alt: -0.06 }, fov: 36 },
+  { at: 0.1, camera: { lat: 41.5, lon: 1.2, alt: 0.42 }, target: { lat: 47, lon: 2.4, alt: -0.06 }, fov: 36 },
   // Elle prend de la hauteur et part vers le sud : Méditerranée, puis Sahara.
-  { at: 0.3, camera: { lat: 30, lon: -2, alt: 0.85 }, target: { lat: 20, lon: 2, alt: -0.25 }, fov: 35 },
+  { at: 0.2, camera: { lat: 30, lon: -2, alt: 0.85 }, target: { lat: 20, lon: 2, alt: -0.25 }, fov: 35 },
   // L'Afrique remplit le cadre.
-  { at: 0.43, camera: { lat: 8, lon: -6, alt: 0.95 }, target: { lat: 8, lon: 12, alt: -0.25 }, fov: 34 },
+  { at: 0.29, camera: { lat: 8, lon: -6, alt: 0.95 }, target: { lat: 8, lon: 12, alt: -0.25 }, fov: 34 },
   // L'Afrique de l'Ouest : la caméra pivote vers l'Atlantique.
-  { at: 0.56, camera: { lat: 9, lon: -11, alt: 0.28 }, target: { lat: 14, lon: -10, alt: -0.04 }, fov: 36 },
+  { at: 0.37, camera: { lat: 9, lon: -11, alt: 0.28 }, target: { lat: 14, lon: -10, alt: -0.04 }, fov: 36 },
   // Le Sénégal.
-  { at: 0.7, camera: { lat: 11.4, lon: -14.2, alt: 0.075 }, target: { lat: 14.6, lon: -14.9, alt: 0 }, fov: 38 },
+  { at: 0.46, camera: { lat: 11.4, lon: -14.2, alt: 0.075 }, target: { lat: 14.6, lon: -14.9, alt: 0 }, fov: 38 },
   // Basse altitude : la caméra s'incline vers l'horizon, face à la côte.
-  { at: 0.82, camera: { lat: 13.2, lon: -14.6, alt: 0.034 }, target: { lat: 14.7, lon: -16.6, alt: 0.0 }, fov: 42 },
+  { at: 0.56, camera: { lat: 13.2, lon: -14.6, alt: 0.034 }, target: { lat: 14.7, lon: -16.6, alt: 0.0 }, fov: 42 },
   // Traversée de la couche de nuages.
   { at: 1, camera: { lat: 14.0, lon: -15.4, alt: 0.012 }, target: { lat: 14.8, lon: -16.8, alt: 0.0 }, fov: 46 },
 ];
@@ -66,21 +67,26 @@ export interface Caption {
 }
 
 export const captions: Caption[] = [
-  { id: "france", title: "France", meta: "Le point de départ", from: 0.07, to: 0.22 },
-  { id: "afrique", title: "Afrique", meta: "30,3 millions de km²", from: 0.35, to: 0.5 },
-  { id: "senegal", title: "Sénégal", meta: "Le cœur de nos actions", from: 0.62, to: 0.82 },
+  { id: "france", title: "France", meta: "Le point de départ", from: 0.04, to: 0.15 },
+  { id: "afrique", title: "Afrique", meta: "30,3 millions de km²", from: 0.23, to: 0.33 },
+  { id: "senegal", title: "Sénégal", meta: "Le cœur de nos actions", from: 0.41, to: 0.56 },
 ];
 
 /** Le fil de lumière France → Sénégal, tracé pendant le voyage. */
 export const LIGHT_PATH = {
   from: { lat: 46.6, lon: 2.4 },
   to: { lat: 14.6, lon: -14.6 },
-  drawFrom: 0.1,
-  drawTo: 0.46,
+  drawFrom: 0.067,
+  drawTo: 0.31,
 };
 
 /** La couche de nuages traversée entre le Sénégal et For Hope. */
-export const CLOUDS = { from: 0.8, peak: 0.94, to: 1 };
+/**
+ * La couche de nuages : elle monte sous la vidéo (from), est déjà épaisse
+ * quand la vidéo s'efface (hold), puis la caméra la traverse longuement
+ * jusqu'au blanc complet (peak), d'où naît la photo.
+ */
+export const CLOUDS = { from: 0.6, hold: 0.76, peak: 0.94, to: 1 };
 
 /**
  * Textures régionales (côtes et frontières Natural Earth 1:10m) : plus la
@@ -130,12 +136,13 @@ export interface VideoSlot {
 export const videoSlots: VideoSlot[] = [
   {
     id: "descente-senegal",
-    // Higgsfield (Kling 3.0), générée à partir de la dernière image 3D (p = 0,83) : raccord exact.
+    // Higgsfield (Kling 3.0), générée à partir de la dernière image 3D : raccord exact.
     src: "/media/video/descente-senegal-16x9.mp4",
     srcPortrait: "/media/video/descente-senegal-9x16.mp4",
     poster: "/media/video/descente-senegal-poster.jpg",
-    from: 0.83,
-    to: 0.945,
+    // démarre sur l'image 3D exacte (même position dans le dernier segment qu'avant)
+    from: 0.5845,
+    to: 0.78,
     illustrative: true,
     note: "Plan aérien qui prolonge la descente 3D au-dessus de la côte sénégalaise (image d'illustration).",
   },

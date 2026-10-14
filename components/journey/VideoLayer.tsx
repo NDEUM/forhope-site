@@ -22,7 +22,7 @@ export function VideoLayer() {
             key={`${v.id}-${format}`}
             className={`journey__video journey__video--${format}`}
             data-video={`${v.from},${v.to}`}
-            data-window={`${v.from},${v.from + 0.012},${v.to - 0.012},${v.to}`}
+            data-window={`${v.from},${v.from + 0.012},${v.to - 0.045},${v.to}`}
           >
             <video src={src} poster={v.poster} muted playsInline preload="none" />
             {v.illustrative && <figcaption>Image d&apos;illustration</figcaption>}

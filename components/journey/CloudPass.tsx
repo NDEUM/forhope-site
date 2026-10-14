@@ -72,7 +72,8 @@ export function CloudPass() {
       u.uPass.value = 1 - smoothstep(OUTRO_CLOUDS.from, OUTRO_CLOUDS.to, o);
       u.uTravel.value = 1 - o / OUTRO_CLOUDS.to;
     } else {
-      u.uPass.value = smoothstep(CLOUDS.from, CLOUDS.peak, p);
+      // déjà épais quand la vidéo s'efface (hold), puis blanc complet au pic
+      u.uPass.value = Math.max(smoothstep(CLOUDS.from, CLOUDS.hold, p) * 0.78, smoothstep(CLOUDS.from, CLOUDS.peak, p));
       u.uTravel.value = (p - CLOUDS.from) / (CLOUDS.to - CLOUDS.from);
     }
     u.uAspect.value = size.width / Math.max(1, size.height);

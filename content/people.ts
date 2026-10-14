@@ -2,7 +2,8 @@
  * Les visages de For Hope. Sources : Rapport d'activités 2025 / Dossier de
  * presse 2026 (Idrissa Gana Gueye, Presnel Kimpembe, Macif Diouf) et
  * informations transmises par l'association (Nicolas Jackson, Kylian Mbappé).
- * Aucune photo n'est utilisée tant qu'une image autorisée n'est pas fournie.
+ * Diffusion des photos des ambassadeurs et parrains autorisée par l'association
+ * (13/10/2026) : il reste à recevoir les fichiers photo à utiliser.
  */
 
 export interface Person {

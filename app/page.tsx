@@ -1,6 +1,7 @@
 import { Journey } from "@/components/journey/Journey";
 import { HomeSections } from "@/components/home/HomeSections";
 import { PhotoArc } from "@/components/home/PhotoArc";
+import { PhotoMorph } from "@/components/home/PhotoMorph";
 import { Outro } from "@/components/journey/Outro";
 import { Preloader } from "@/components/ui/Preloader";
 import "./home.css";
@@ -13,6 +14,8 @@ export default function HomePage() {
   return (
     <div className="home2">
       <Journey />
+      {/* Juste après la photo « Redonnons un sourire aux enfants » : les photos se rassemblent au fil du défilement. */}
+      <PhotoMorph />
       <PhotoArc />
       <HomeSections />
       <Outro />

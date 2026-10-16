@@ -1742,3 +1742,283 @@ body:has(.home2) .ft__text,
 body:has(.home2) .ft__link {
   text-shadow: 0 1px 12px rgb(12 13 35 / 0.8);
 }
+
+/* ------------------------------------------------------------------ */
+/* Scroll Morph Hero — entre « FOR HOPE » et la présentation          */
+/* Défilement natif : la section est haute, le plan reste collant.     */
+/* ------------------------------------------------------------------ */
+.smh {
+  position: relative;
+  color: var(--white);
+  background: var(--midnight);
+}
+
+/* le blanc de la page se fond dans la nuit, puis la nuit revient au blanc */
+.smh-fade {
+  height: 30svh;
+}
+
+.smh-fade--in {
+  background: linear-gradient(to bottom, var(--paper), var(--midnight));
+}
+
+.smh-fade--out {
+  background: linear-gradient(to bottom, var(--midnight), var(--paper));
+}
+
+.smh-track {
+  position: relative;
+  height: 340svh;
+}
+
+.smh-stage {
+  --smh-w: 110px;
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  /* halo bleu profond au centre, aux couleurs de la charte */
+  background: radial-gradient(ellipse 60% 55% at 50% 52%, rgb(0 64 109 / 0.55), transparent 72%);
+}
+
+.smh-cards {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+}
+
+.smh-card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--smh-w);
+  aspect-ratio: 3 / 4;
+  margin: calc(var(--smh-w) * -2 / 3) 0 0 calc(var(--smh-w) / -2);
+  perspective: 900px;
+  pointer-events: auto;
+  will-change: transform, opacity;
+  opacity: 0;
+}
+
+.smh-card__inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.7s var(--ease-expo);
+}
+
+.smh-card__face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 10px;
+  backface-visibility: hidden;
+  box-shadow: 0 14px 34px rgb(4 5 13 / 0.45), 0 0 0 1px rgb(255 255 255 / 0.08);
+}
+
+.smh-card__front img {
+  object-fit: cover;
+}
+
+.smh-card__back {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.7rem;
+  background: linear-gradient(160deg, var(--deep-blue), var(--midnight));
+  transform: rotateY(180deg);
+}
+
+.smh-card__back p {
+  margin: 0;
+  font-size: 0.62rem;
+  line-height: 1.35;
+  color: rgb(255 255 255 / 0.86);
+}
+
+.smh-card__logo {
+  width: 70%;
+  height: auto;
+}
+
+/* retournement subtil, uniquement à la souris */
+@media (hover: hover) and (pointer: fine) {
+  .smh-card:hover .smh-card__inner {
+    transform: rotateY(180deg);
+  }
+}
+
+.smh-hint,
+.smh-title,
+.smh-copy {
+  position: absolute;
+  left: 50%;
+  z-index: 40;
+  translate: -50% 0;
+  margin: 0;
+  text-align: center;
+}
+
+.smh-hint {
+  top: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  opacity: var(--smh-hint, 1);
+  pointer-events: none;
+}
+
+.smh-hint__line {
+  width: 1px;
+  height: 46px;
+  background: linear-gradient(var(--saloum-blue), transparent);
+}
+
+.smh-title {
+  top: 50%;
+  width: min(15ch, 70vw);
+  translate: -50% -50%;
+  font-size: clamp(1.4rem, 3vw, 2.6rem);
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  opacity: var(--smh-title, 0);
+  transform: translateY(calc((1 - var(--smh-title, 0)) * 14px));
+  pointer-events: none;
+}
+
+.smh-copy {
+  top: clamp(5.5rem, 16svh, 9rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  width: min(34rem, calc(100vw - 2 * var(--gutter)));
+  opacity: var(--smh-copy, 0);
+  transform: translateY(calc((1 - var(--smh-copy, 0)) * 18px));
+  visibility: visible;
+}
+
+.smh:not(.smh--static) .smh-copy {
+  pointer-events: none;
+}
+
+.smh-copy > * {
+  pointer-events: auto;
+}
+
+.smh-sup {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--saloum-blue);
+}
+
+.smh-lede {
+  margin: 0;
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  line-height: 1.55;
+  color: rgb(255 255 255 / 0.82);
+}
+
+.fh .smh .button--outline {
+  color: var(--white);
+  border-color: rgb(255 255 255 / 0.5);
+}
+
+.fh .smh .button--outline:hover {
+  border-color: var(--white);
+}
+
+/* Après la photo d'arrivée (fond sombre) : la section remonte en fondu sur
+   le bas de la photo, comme « For Hope en images », et enchaîne sans retour au blanc. */
+.smh--after-photo {
+  z-index: 2;
+  margin-top: -14svh;
+  background: transparent;
+}
+
+.smh--after-photo .smh-fade--in {
+  height: 14svh;
+  background: linear-gradient(to bottom, rgb(12 13 35 / 0), var(--midnight));
+}
+
+.smh--after-photo .smh-track {
+  background: var(--midnight);
+}
+
+.smh--after-photo .smh-fade--out {
+  height: 0;
+}
+
+.smh--after-photo + .arc {
+  margin-top: -12svh;
+  padding-top: 0;
+  background: radial-gradient(ellipse 60% 45% at 50% 66%, rgb(0 64 109 / 0.55), transparent 70%), var(--midnight);
+}
+
+.smh--after-photo .button--outline {
+  color: var(--white);
+  border-color: rgb(255 255 255 / 0.5);
+}
+
+/* avant l'hydratation : les cartes restent cachées (pas de pile au centre) */
+.smh--ready .smh-card {
+  opacity: 1;
+}
+
+/* Animations désactivées : composition statique et accessible. */
+.smh--static .smh-track {
+  height: auto;
+  padding: clamp(3rem, 8vw, 6rem) var(--gutter);
+}
+
+.smh--static .smh-stage {
+  position: relative;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.4rem;
+}
+
+.smh--static .smh-hint {
+  display: none;
+}
+
+.smh--static .smh-title,
+.smh--static .smh-copy {
+  position: static;
+  translate: none;
+  transform: none;
+  opacity: 1;
+}
+
+.smh--static .smh-cards {
+  position: static;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 0.8rem;
+  width: min(100%, 980px);
+}
+
+.smh--static .smh-card {
+  position: relative;
+  left: auto;
+  top: auto;
+  width: auto;
+  margin: 0;
+  opacity: 1;
+}

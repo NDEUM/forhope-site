@@ -7,7 +7,7 @@ import { videoSlots } from "@/content/journey";
  * suit le scroll. Les vidéos générées portent la mention « illustration ».
  */
 export function VideoLayer() {
-  const slots = videoSlots.filter((v) => v.src);
+  const slots = videoSlots.filter((v) => v.src && v.enabled !== false);
   if (!slots.length) return null;
   return (
     <div className="journey__videos" aria-hidden="true">

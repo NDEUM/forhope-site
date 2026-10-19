@@ -436,18 +436,44 @@ html.no-webgl .journey__altitude {
   color: rgb(255 255 255 / 0.6);
 }
 
-/* Le blanc des nuages, d'où naît la photographie */
-.journey__whiteout {
+/* Arrivée au Sénégal : une lumière dorée (Golden'Hope) naît sur le pays,
+   à sa position réelle à l'écran (--fx, --fy), et s'étend. */
+.journey__bloom {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at 50% 45%, #fffdf8, #e9eef4);
-  opacity: var(--white, 0);
+  z-index: 3;
+  background: radial-gradient(
+    circle calc(4vmax + var(--bloom-size, 0) * 140vmax) at var(--fx, 50%) var(--fy, 50%),
+    rgb(255 246 214 / 0.95) 0%,
+    rgb(253 231 159 / 0.85) 18%,
+    rgb(232 191 110 / 0.55) 42%,
+    rgb(222 172 89 / 0.18) 70%,
+    transparent 100%
+  );
+  opacity: var(--bloom, 0);
+  pointer-events: none;
 }
 
+/* …puis la photographie s'ouvre depuis ce même point. */
 .journey__arrival {
   position: absolute;
   inset: 0;
-  opacity: var(--arrive, 0);
+  /* bord fondu : la photo naît dans la lumière, sans contour net */
+  -webkit-mask-image: radial-gradient(circle calc(var(--arrive, 0) * 175vmax) at var(--fx, 50%) var(--fy, 50%), #000 62%, transparent 100%);
+  mask-image: radial-gradient(circle calc(var(--arrive, 0) * 175vmax) at var(--fx, 50%) var(--fy, 50%), #000 62%, transparent 100%);
+  opacity: calc(var(--arrive, 0) * 4);
+}
+
+/* de la lumière dorée à la lumière naturelle de la photographie */
+.journey__arrival::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: radial-gradient(circle at var(--fx, 50%) var(--fy, 50%), rgb(253 231 159 / 0.7), rgb(222 172 89 / 0.35));
+  mix-blend-mode: soft-light;
+  opacity: calc(1 - var(--arrive, 0));
+  pointer-events: none;
 }
 
 .journey__photo {

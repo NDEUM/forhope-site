@@ -31,30 +31,36 @@ export interface Shot {
 export const SENEGAL = { lat: 14.45, lon: -14.6 };
 
 /**
- * Plan de vol : France (point de départ) → traversée de la Méditerranée et du
- * Sahara → Afrique → Afrique de l'Ouest → Sénégal (cœur des actions). Les
- * deux derniers plans sont inchangés : la vidéo Higgsfield démarre exactement
- * sur leur image (à 0,5845). France → Sénégal tient en 56 % du défilement,
- * la traversée des nuages prend le reste.
+ * Plan de vol : France (point de départ) → Méditerranée et Sahara → Afrique
+ * → Afrique de l'Ouest → Sénégal (cœur des actions), atteint à ARRIVAL.at.
+ * Dès l'arrivée, une lumière dorée naît sur le Sénégal et s'ouvre sur la
+ * première photographie (voir ARRIVAL) ; la caméra continue seulement de
+ * s'approcher doucement pendant ce raccord.
  */
 export const shots: Shot[] = [
   // L'Europe vue de haut : la Terre remplit tout le cadre.
   { at: 0, camera: { lat: 40, lon: -6, alt: 0.72 }, target: { lat: 46, lon: 0, alt: -0.5 }, fov: 36 },
   // La caméra se rapproche du territoire français.
-  { at: 0.1, camera: { lat: 41.5, lon: 1.2, alt: 0.42 }, target: { lat: 47, lon: 2.4, alt: -0.06 }, fov: 36 },
+  { at: 0.174, camera: { lat: 41.5, lon: 1.2, alt: 0.42 }, target: { lat: 47, lon: 2.4, alt: -0.06 }, fov: 36 },
   // Elle prend de la hauteur et part vers le sud : Méditerranée, puis Sahara.
-  { at: 0.2, camera: { lat: 30, lon: -2, alt: 0.85 }, target: { lat: 20, lon: 2, alt: -0.25 }, fov: 35 },
+  { at: 0.348, camera: { lat: 30, lon: -2, alt: 0.85 }, target: { lat: 20, lon: 2, alt: -0.25 }, fov: 35 },
   // L'Afrique remplit le cadre.
-  { at: 0.29, camera: { lat: 8, lon: -6, alt: 0.95 }, target: { lat: 8, lon: 12, alt: -0.25 }, fov: 34 },
+  { at: 0.504, camera: { lat: 8, lon: -6, alt: 0.95 }, target: { lat: 8, lon: 12, alt: -0.25 }, fov: 34 },
   // L'Afrique de l'Ouest : la caméra pivote vers l'Atlantique.
-  { at: 0.37, camera: { lat: 9, lon: -11, alt: 0.28 }, target: { lat: 14, lon: -10, alt: -0.04 }, fov: 36 },
-  // Le Sénégal.
-  { at: 0.46, camera: { lat: 11.4, lon: -14.2, alt: 0.075 }, target: { lat: 14.6, lon: -14.9, alt: 0 }, fov: 38 },
-  // Basse altitude : la caméra s'incline vers l'horizon, face à la côte.
-  { at: 0.56, camera: { lat: 13.2, lon: -14.6, alt: 0.034 }, target: { lat: 14.7, lon: -16.6, alt: 0.0 }, fov: 42 },
-  // Traversée de la couche de nuages.
-  { at: 1, camera: { lat: 14.0, lon: -15.4, alt: 0.012 }, target: { lat: 14.8, lon: -16.8, alt: 0.0 }, fov: 46 },
+  { at: 0.643, camera: { lat: 9, lon: -11, alt: 0.28 }, target: { lat: 14, lon: -10, alt: -0.04 }, fov: 36 },
+  // Le Sénégal, point focal de l'écran : arrivée.
+  { at: 0.8, camera: { lat: 11.4, lon: -14.2, alt: 0.075 }, target: { lat: 14.6, lon: -14.9, alt: 0 }, fov: 38 },
+  // Pendant la lumière dorée, une approche lente, sans pause.
+  { at: 1, camera: { lat: 12.6, lon: -14.5, alt: 0.048 }, target: { lat: 14.6, lon: -14.9, alt: 0 }, fov: 38 },
 ];
+
+/**
+ * L'arrivée au Sénégal : synchronisée sur la progression réelle de la
+ * caméra (le plan Sénégal est atteint à `at`). Une lumière dorée naît sur
+ * le Sénégal, s'étend (`bloomPeak`), puis la photographie s'ouvre depuis ce
+ * point (`photoFrom` → `photoFull`) ; le titre arrive en dernier.
+ */
+export const ARRIVAL = { focus: { lat: 14.6, lon: -14.9 }, at: 0.8, bloomPeak: 0.88, photoFrom: 0.84, photoFull: 0.96 };
 
 /** Repères typographiques (progression du voyage). */
 export interface Caption {
@@ -67,26 +73,24 @@ export interface Caption {
 }
 
 export const captions: Caption[] = [
-  { id: "france", title: "France", meta: "Le point de départ", from: 0.04, to: 0.15 },
-  { id: "afrique", title: "Afrique", meta: "30,3 millions de km²", from: 0.23, to: 0.33 },
-  { id: "senegal", title: "Sénégal", meta: "Le cœur de nos actions", from: 0.41, to: 0.56 },
+  { id: "france", title: "France", meta: "Le point de départ", from: 0.07, to: 0.26 },
+  { id: "afrique", title: "Afrique", meta: "30,3 millions de km²", from: 0.4, to: 0.57 },
+  { id: "senegal", title: "Sénégal", meta: "Le cœur de nos actions", from: 0.7, to: 0.86 },
 ];
 
 /** Le fil de lumière France → Sénégal, tracé pendant le voyage. */
 export const LIGHT_PATH = {
   from: { lat: 46.6, lon: 2.4 },
   to: { lat: 14.6, lon: -14.6 },
-  drawFrom: 0.067,
-  drawTo: 0.31,
+  drawFrom: 0.117,
+  drawTo: 0.54,
 };
 
-/** La couche de nuages traversée entre le Sénégal et For Hope. */
 /**
- * La couche de nuages : elle monte sous la vidéo (from), est déjà épaisse
- * quand la vidéo s'efface (hold), puis la caméra la traverse longuement
- * jusqu'au blanc complet (peak), d'où naît la photo.
+ * Ancienne traversée des nuages entre le Sénégal et la photo : retirée de
+ * l'ouverture (l'arrivée au Sénégal déclenche directement la lumière
+ * dorée). Les nuages restent utilisés dans la sortie (OUTRO_CLOUDS).
  */
-export const CLOUDS = { from: 0.6, hold: 0.76, peak: 0.94, to: 1 };
 
 /**
  * Textures régionales (côtes et frontières Natural Earth 1:10m) : plus la
@@ -126,6 +130,8 @@ export interface VideoSlot {
   /** Vidéo portrait (mobile), facultative. */
   srcPortrait?: string;
   poster?: string;
+  /** false : conservée (fichiers et réglages) mais retirée du parcours. */
+  enabled?: boolean;
   /** Fenêtre d'affichage (progression du voyage). */
   from: number;
   to: number;
@@ -144,12 +150,14 @@ export const videoSlots: VideoSlot[] = [
     from: 0.5845,
     to: 0.78,
     illustrative: true,
+    // retirée de l'ouverture : l'arrivée au Sénégal mène directement aux photographies
+    enabled: false,
     note: "Plan aérien qui prolonge la descente 3D au-dessus de la côte sénégalaise (image d'illustration).",
   },
 ];
 
 /** Longueur de scroll du voyage (en hauteur d'écran). */
-export const JOURNEY_LENGTH_VH = 500;
+export const JOURNEY_LENGTH_VH = 300;
 
 /**
  * LA SORTIE — en bas du site, le miroir du voyage : la caméra traverse les

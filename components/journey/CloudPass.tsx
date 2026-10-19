@@ -3,14 +3,14 @@
 import { useEffect, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { CLOUDS, OUTRO_CLOUDS } from "@/content/journey";
+import { OUTRO_CLOUDS } from "@/content/journey";
 import { journey } from "@/lib/journey-store";
 import { smoothstep } from "@/lib/math";
 
 /**
  * Traversée de la couche nuageuse, en plein écran : plusieurs plans de
- * brume qui grossissent avec la descente (la caméra avance à travers),
- * jusqu'à un blanc laiteux d'où naît la première photographie.
+ * brume que la caméra traverse. Utilisée par la sortie (bas du site), où
+ * la caméra remonte à travers les nuages.
  */
 export function CloudPass() {
   const material = useMemo(
@@ -64,7 +64,6 @@ export function CloudPass() {
   useEffect(() => () => material.dispose(), [material]);
 
   useFrame(({ size, clock }) => {
-    const p = journey.smooth;
     const u = material.uniforms;
     if (journey.outroActive) {
       // Sortie : on part dans les nuages, ils s'ouvrent sous la caméra qui monte.
@@ -72,9 +71,8 @@ export function CloudPass() {
       u.uPass.value = 1 - smoothstep(OUTRO_CLOUDS.from, OUTRO_CLOUDS.to, o);
       u.uTravel.value = 1 - o / OUTRO_CLOUDS.to;
     } else {
-      // déjà épais quand la vidéo s'efface (hold), puis blanc complet au pic
-      u.uPass.value = Math.max(smoothstep(CLOUDS.from, CLOUDS.hold, p) * 0.78, smoothstep(CLOUDS.from, CLOUDS.peak, p));
-      u.uTravel.value = (p - CLOUDS.from) / (CLOUDS.to - CLOUDS.from);
+      // ouverture : plus de traversée des nuages, l'arrivée au Sénégal passe par la lumière dorée
+      u.uPass.value = 0;
     }
     u.uAspect.value = size.width / Math.max(1, size.height);
     u.uTime.value = clock.elapsedTime;

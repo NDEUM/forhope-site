@@ -7,6 +7,7 @@ import * as THREE from "three";
 import { JourneyCamera } from "@/components/journey/JourneyCamera";
 import { CloudPass } from "@/components/journey/CloudPass";
 import { Earth } from "@/components/journey/earth/Earth";
+import { ArrivalFocus } from "@/components/journey/earth/ArrivalFocus";
 import { Atmosphere, Clouds, SkyDome, SpaceBackdrop, Stars } from "@/components/journey/earth/Sky";
 import { LightPath } from "@/components/journey/earth/LightPath";
 import { journey } from "@/lib/journey-store";
@@ -97,6 +98,7 @@ export default function JourneyCanvas() {
       <Earth tier={tier} onReady={onReady} />
       <Clouds />
       <LightPath />
+      <ArrivalFocus />
       <Atmosphere />
       <CloudPass />
       <Pause />

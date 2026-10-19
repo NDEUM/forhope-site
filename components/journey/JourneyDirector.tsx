@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { CLOUDS } from "@/content/journey";
+import { ARRIVAL } from "@/content/journey";
 import { journey } from "@/lib/journey-store";
 import { damp, smoothstep, window4 } from "@/lib/math";
 
@@ -17,7 +17,7 @@ const FOLLOW = 3.6;
  *  - ScrollTrigger mesure la progression sur la piste ;
  *  - une seule progression amortie (journey.smooth) pilote la caméra
  *    ET les repères typographiques : ils sont toujours synchrones ;
- *  - raccord nuages → blanc → première photographie.
+ *  - arrivée au Sénégal : lumière dorée → première photographie.
  */
 export function JourneyDirector() {
   useEffect(() => {
@@ -88,18 +88,25 @@ export function JourneyDirector() {
         item.el.style.visibility = o < 0.002 ? "hidden" : "visible";
       }
 
-      // Raccord : les nuages (WebGL) deviennent un blanc laiteux, d'où naît la photo.
-      const white = window4(CLOUDS.peak - 0.03, CLOUDS.peak - 0.005, CLOUDS.peak + 0.005, 0.995, p);
-      const arrive = smoothstep(CLOUDS.peak - 0.01, CLOUDS.peak, p);
-      const zoom = 1.24 - 0.24 * smoothstep(CLOUDS.peak - 0.01, 1, p);
-      const copy = smoothstep(0.975, 0.998, p);
+      // Arrivée au Sénégal (synchronisée sur la caméra) : une lumière dorée naît
+      // sur le Sénégal, s'étend, et la photographie s'ouvre depuis ce point.
+      const bloom = window4(ARRIVAL.at, ARRIVAL.bloomPeak, ARRIVAL.photoFrom + 0.06, ARRIVAL.photoFull + 0.02, p);
+      const bloomSize = smoothstep(ARRIVAL.at, ARRIVAL.photoFull, p);
+      const arrive = smoothstep(ARRIVAL.photoFrom, ARRIVAL.photoFull, p);
+      const zoom = 1.24 - 0.24 * smoothstep(ARRIVAL.photoFrom, 1, p);
+      const copy = smoothstep(0.965, 0.995, p);
       // Titrage d'ouverture : il s'envole pendant les premiers instants de la descente.
       // linéaire : chaque ligne a sa propre fenêtre de bascule (voir --l en CSS)
       const titleOut = Math.min(1, Math.max(0, (p - 0.002) / 0.07));
-      const vars = `${white.toFixed(3)}|${arrive.toFixed(3)}|${zoom.toFixed(4)}|${copy.toFixed(3)}|${p.toFixed(4)}`;
+      const fx = (journey.focusX * 100).toFixed(1);
+      const fy = (journey.focusY * 100).toFixed(1);
+      const vars = `${bloom.toFixed(3)}|${bloomSize.toFixed(3)}|${arrive.toFixed(3)}|${zoom.toFixed(4)}|${copy.toFixed(3)}|${p.toFixed(4)}|${fx}|${fy}`;
       if (vars !== lastVars) {
         lastVars = vars;
-        stage.style.setProperty("--white", white.toFixed(3));
+        stage.style.setProperty("--bloom", bloom.toFixed(3));
+        stage.style.setProperty("--bloom-size", bloomSize.toFixed(3));
+        stage.style.setProperty("--fx", `${fx}%`);
+        stage.style.setProperty("--fy", `${fy}%`);
         stage.style.setProperty("--arrive", arrive.toFixed(3));
         stage.style.setProperty("--zoom", zoom.toFixed(4));
         stage.style.setProperty("--copy", copy.toFixed(3));

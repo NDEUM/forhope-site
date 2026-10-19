@@ -10,9 +10,9 @@ import { brand } from "@/lib/brand";
 /** Les étapes affichées dans l'index de chapitres (à gauche). */
 const chapters = [
   { label: "France", at: 0 },
-  { label: "Afrique", at: 0.2 },
-  { label: "Sénégal", at: 0.4 },
-  { label: "For Hope", at: 0.94 },
+  { label: "Afrique", at: 0.35 },
+  { label: "Sénégal", at: 0.7 },
+  { label: "For Hope", at: 0.9 },
 ];
 
 /**
@@ -73,7 +73,8 @@ export function Journey() {
         </div>
 
         <VideoLayer />
-        <div className="journey__whiteout" aria-hidden="true" />
+        {/* Arrivée au Sénégal : la lumière dorée naît sur le pays et s'étend. */}
+        <div className="journey__bloom" aria-hidden="true" />
 
         {/* Arrivée : la première image du monde réel. */}
         <div className="journey__arrival">

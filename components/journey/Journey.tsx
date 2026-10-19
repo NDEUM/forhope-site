@@ -44,10 +44,20 @@ export function Journey() {
 
         <div className="journey__intro" data-window="-1,-0.5,0.035,0.07">
           <p className="journey__eyebrow">For Hope Association</p>
-          <p className="journey__cue">
-            <span>Scroller</span>
-            <span className="journey__cue-line" aria-hidden="true" />
+        </div>
+
+        {/* Invitation à défiler : bien en évidence, au centre en bas de l'écran (ordinateur et mobile). */}
+        <div className="journey__scroll" data-window="-1,-0.5,0.035,0.07">
+          <p className="journey__scroll-pill">
+            <span className="journey__scroll-mouse" aria-hidden="true">
+              <span />
+            </span>
+            Scroller
           </p>
+          <span className="journey__scroll-chevrons" aria-hidden="true">
+            <span />
+            <span />
+          </span>
         </div>
 
         <ol className="journey__captions">

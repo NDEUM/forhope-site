@@ -15,8 +15,15 @@ const roboto = Roboto({
   variable: "--font-roboto",
 });
 
+/**
+ * Adresse publique du site, base des URL absolues (dont l'image de partage).
+ * Sur Vercel : l'adresse de production du projet (le domaine officiel sert
+ * encore l'ancien site ; il deviendra cette adresse une fois relié à Vercel).
+ */
+const publicUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : site.url;
+
 export const metadata: Metadata = {
-  metadataBase: new URL(site.url),
+  metadataBase: new URL(publicUrl),
   title: {
     default: `${site.name} Association`,
     template: `%s · ${site.name}`,
@@ -26,6 +33,12 @@ export const metadata: Metadata = {
     type: "website",
     locale: "fr_FR",
     siteName: site.fullName,
+    title: `${site.name} Association`,
+    description: site.description,
+  },
+  // Image de partage : app/opengraph-image.jpg et app/twitter-image.jpg (l'ouverture du site).
+  twitter: {
+    card: "summary_large_image",
     title: `${site.name} Association`,
     description: site.description,
   },

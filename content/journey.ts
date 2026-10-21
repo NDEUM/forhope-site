@@ -33,8 +33,8 @@ export const SENEGAL = { lat: 14.45, lon: -14.6 };
 /**
  * Plan de vol : France (point de départ) → Méditerranée et Sahara → Afrique
  * → Afrique de l'Ouest → Sénégal (cœur des actions), atteint à ARRIVAL.at.
- * Dès l'arrivée, une lumière dorée naît sur le Sénégal et s'ouvre sur la
- * première photographie (voir ARRIVAL) ; la caméra continue seulement de
+ * Dès l'arrivée, une lumière dorée naît sur le Sénégal et s'étend, puis se
+ * fond dans la section suivante (voir ARRIVAL) ; la caméra continue seulement de
  * s'approcher doucement pendant ce raccord.
  */
 export const shots: Shot[] = [
@@ -55,12 +55,25 @@ export const shots: Shot[] = [
 ];
 
 /**
+ * L'ouverture, avant le voyage : la Terre en miniature, au loin, dans le
+ * noir ; les étoiles s'allument (jusqu'à `stars`), puis la caméra rejoint le
+ * premier plan (`move`). Durée totale `duration` secondes, au temps (le
+ * défilement l'accélère).
+ */
+export const INTRO = {
+  shot: { at: 0, camera: { lat: 33, lon: -8, alt: 5.2 }, target: { lat: 33, lon: -8, alt: -1 }, fov: 30 } satisfies Shot,
+  duration: 4.6,
+  stars: 0.3,
+  move: 0.32,
+};
+
+/**
  * L'arrivée au Sénégal : synchronisée sur la progression réelle de la
  * caméra (le plan Sénégal est atteint à `at`). Une lumière dorée naît sur
- * le Sénégal, s'étend (`bloomPeak`), puis la photographie s'ouvre depuis ce
- * point (`photoFrom` → `photoFull`) ; le titre arrive en dernier.
+ * le Sénégal, s'étend (`bloomPeak`), puis se fond dans le bleu nuit
+ * (`fadeFrom` → `fadeTo`) de la section qui suit (les photos qui se rassemblent).
  */
-export const ARRIVAL = { focus: { lat: 14.6, lon: -14.9 }, at: 0.8, bloomPeak: 0.88, photoFrom: 0.84, photoFull: 0.96 };
+export const ARRIVAL = { focus: { lat: 14.6, lon: -14.9 }, at: 0.8, bloomPeak: 0.88, fadeFrom: 0.91, fadeTo: 0.98 };
 
 /** Repères typographiques (progression du voyage). */
 export interface Caption {

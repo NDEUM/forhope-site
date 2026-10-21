@@ -13,12 +13,12 @@ const thumb = (src: string) => `/_next/image?url=${encodeURIComponent(src)}&w=38
 const IMAGES = homePhotos.map((p) => thumb(p.src));
 
 /**
- * Premier écran de l'accueil, avant le voyage : les photos de For Hope en
- * orbite dans une poussière dorée. Défilement natif : la molette et le
+ * « Ensemble, faisons grandir l'espoir » : les photos de For Hope en orbite
+ * dans une poussière dorée (au-dessus de « Nos moments »). Défilement natif : la molette et le
  * doigt font défiler la page (pas de zoom capturé) ; à la souris, on peut
  * faire tourner la scène en la faisant glisser.
  */
-export function CosmosIntro() {
+export function CosmosIntro({ inLight = false }: { inLight?: boolean }) {
   const root = useRef<HTMLElement>(null);
   const tier = useQualityTier();
   const [active, setActive] = useState(true);
@@ -47,7 +47,7 @@ export function CosmosIntro() {
   }, []);
 
   return (
-    <section ref={root} className="cosmos" aria-labelledby="cosmos-title">
+    <section ref={root} className={`cosmos${inLight ? " cosmos--in-light" : ""}`} aria-labelledby="cosmos-title" data-tone-dark>
       <div className="cosmos__canvas" aria-hidden="true">
         <Canvas
           dpr={[1, tier === "high" ? 1.5 : 1.25]}

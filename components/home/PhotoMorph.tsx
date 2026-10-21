@@ -3,7 +3,7 @@ import { homePhotos as PHOTOS } from "@/content/home-photos";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 
 /**
- * Juste après la photo d'arrivée « Redonnons un sourire aux enfants » : les photos de l'association et de ses projets se
+ * Après les photos en orbite : les photos de l'association et de ses projets se
  * rassemblent au fil du défilement — dispersées, en ligne, en cercle, puis
  * en arc. Uniquement des photos authentiques, avec leurs descriptions.
  */

@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
-import { EARTH_RADIUS_KM, outroShots, shots, type Shot } from "@/content/journey";
+import { EARTH_RADIUS_KM, INTRO, outroShots, shots, type Shot } from "@/content/journey";
 import { journey } from "@/lib/journey-store";
 import { latLonToVector3 } from "@/lib/geo";
 import { clamp, smoothstep } from "@/lib/math";
@@ -52,6 +52,7 @@ export function JourneyCamera() {
   const path = useMemo(() => createPath(shots), []);
   // La sortie, en bas du site : même caméra, plan de vol inverse.
   const outroPath = useMemo(() => createPath(outroShots), []);
+  const introRow = useMemo(() => channels(INTRO.shot), []);
   const v = useMemo(
     () => ({
       pos: new THREE.Vector3(),
@@ -72,6 +73,19 @@ export function JourneyCamera() {
     if (process.env.NODE_ENV !== "production") {
       const dev = (window as unknown as { __shot?: Shot }).__shot;
       if (dev) [lat, lon, logAlt, tLat, tLon, tAlt, fovBase] = channels(dev);
+    }
+    // Ouverture : depuis la Terre en miniature, au loin, jusqu'au premier plan.
+    if (!journey.outroActive && journey.intro < 1) {
+      const t = clamp((journey.intro - INTRO.move) / (1 - INTRO.move));
+      const e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      const k = 1 - e;
+      lat += (introRow[0] - lat) * k;
+      lon += (introRow[1] - lon) * k;
+      logAlt += (introRow[2] - logAlt) * k;
+      tLat += (introRow[3] - tLat) * k;
+      tLon += (introRow[4] - tLon) * k;
+      tAlt += (introRow[5] - tAlt) * k;
+      fovBase += (introRow[6] - fovBase) * k;
     }
     let alt = Math.exp(logAlt);
     // Écran vertical : le champ est plus haut, l'horizon apparaîtrait ; au début

@@ -1,6 +1,4 @@
-import Image from "next/image";
 import { captions, JOURNEY_LENGTH_VH, shots } from "@/content/journey";
-import { photos } from "@/content/media";
 import { JourneyScene } from "@/components/journey/JourneyScene";
 import { JourneyDirector } from "@/components/journey/JourneyDirector";
 import { VideoLayer } from "@/components/journey/VideoLayer";
@@ -24,8 +22,6 @@ const chapters = [
 const LINES = ["Seul on va plus vite,", "ensemble on va plus", "loin."];
 
 export function Journey() {
-  // La photo du roll-up officiel « Redonnons un sourire aux enfants ».
-  const arrival = photos.sourirePortrait;
   return (
     <section id="voyage" className="journey" style={{ ["--len" as string]: `${JOURNEY_LENGTH_VH}svh` }} aria-label="Le voyage vers For Hope">
       <JourneyScene />
@@ -34,7 +30,7 @@ export function Journey() {
 
         {/* Titrage d'ouverture, dans le noir à gauche de la Terre : une inscription sur un mur sombre, révélée par un faisceau doré ; au défilement, les lignes basculent une à une comme les volets d'un tableau mécanique. */}
         <FlashlightTextReveal
-          as="p"
+          as="h1"
           text={LINES}
           className="journey__title"
           lineClassName="journey__title-line"
@@ -72,16 +68,8 @@ export function Journey() {
         {/* Arrivée au Sénégal : la lumière dorée naît sur le pays et s'étend. */}
         <div className="journey__bloom" aria-hidden="true" />
 
-        {/* Arrivée : la première image du monde réel. */}
-        <div className="journey__arrival">
-          <div className="journey__photo">
-            <Image src={arrival.src} alt={arrival.alt} fill sizes="100vw" />
-          </div>
-          <div className="journey__arrival-copy">
-            <Image className="journey__logo" src="/brand/forhope-logo-blanc.png" alt="For Hope Association" width={1276} height={373} sizes="200px" />
-            <h1 className="journey__headline">Redonnons un sourire aux enfants.</h1>
-          </div>
-        </div>
+        {/* …puis elle se fond dans le bleu nuit de la section suivante (les photos qui se rassemblent). */}
+        <div className="journey__fadeout" aria-hidden="true" />
       </div>
       <JourneyDirector />
     </section>

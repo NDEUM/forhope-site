@@ -12,6 +12,11 @@ export const journey = {
   outro: 0,
   outroActive: false,
   /** Position à l'écran (0 → 1) du point d'arrivée au Sénégal, d'où naît la lumière dorée. */
+  /**
+   * Ouverture (0 → 1, au temps, après le chargement) : la Terre apparaît au
+   * loin, les étoiles s'allument, puis la caméra rejoint le premier plan.
+   */
+  intro: 0,
   /** Le premier écran (galerie en orbite) couvre toute la vue : la Terre peut se mettre en pause. */
   introCovering: false,
   focusX: 0.5,

@@ -6,7 +6,8 @@ import * as THREE from "three";
 import { seeded, smoothstep } from "@/lib/math";
 import { SUN_DIRECTION } from "@/components/journey/earth/Earth";
 import { geoToVector3 } from "@/lib/geo";
-import { shots } from "@/content/journey";
+import { INTRO, shots } from "@/content/journey";
+import { journey } from "@/lib/journey-store";
 
 /** Vue de très haut, tout le globe visible est éclairé (même courbe que Earth). */
 const highAltitudeFill = (alt: number) => smoothstep(0.35, 0.75, alt);
@@ -215,7 +216,9 @@ export function SpaceBackdrop() {
   }, []);
   useEffect(() => () => material.dispose(), [material]);
   useFrame(({ camera }) => {
-    material.uniforms.uOpacity.value = smoothstep(0.15, 0.6, camera.position.length() - 1);
+    // ouverture : le ciel s'allume avec les étoiles
+    const lit = journey.outroActive ? 1 : smoothstep(0, INTRO.stars, journey.intro);
+    material.uniforms.uOpacity.value = smoothstep(0.15, 0.6, camera.position.length() - 1) * lit;
   });
   return (
     <mesh material={material} renderOrder={-2} frustumCulled={false}>
@@ -277,7 +280,9 @@ export function Stars({ count = 2600 }: { count?: number }) {
   );
   useFrame(({ camera, gl }) => {
     const alt = camera.position.length() - 1;
-    material.uniforms.uOpacity.value = smoothstep(0.15, 0.6, alt);
+    // ouverture : les étoiles s'allument une à une avant le départ
+    const lit = journey.outroActive ? 1 : smoothstep(0.02, INTRO.stars, journey.intro);
+    material.uniforms.uOpacity.value = smoothstep(0.15, 0.6, alt) * lit;
     material.uniforms.uPixelRatio.value = gl.getPixelRatio();
   });
   return <points geometry={geometry} material={material} frustumCulled={false} renderOrder={-1} />;

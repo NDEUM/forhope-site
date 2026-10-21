@@ -3,7 +3,8 @@
 import { useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ARRIVAL } from "@/content/journey";
+import { ARRIVAL, INTRO } from "@/content/journey";
+import { onReady } from "@/lib/experience-store";
 import { journey } from "@/lib/journey-store";
 import { damp, smoothstep, window4 } from "@/lib/math";
 
@@ -17,7 +18,7 @@ const FOLLOW = 3.6;
  *  - ScrollTrigger mesure la progression sur la piste ;
  *  - une seule progression amortie (journey.smooth) pilote la caméra
  *    ET les repères typographiques : ils sont toujours synchrones ;
- *  - arrivée au Sénégal : lumière dorée → première photographie.
+ *  - arrivée au Sénégal : lumière dorée → bleu nuit → photos qui se rassemblent.
  */
 export function JourneyDirector() {
   useEffect(() => {
@@ -63,6 +64,16 @@ export function JourneyDirector() {
     }
     journey.smooth = journey.progress;
 
+    // Ouverture (au temps, après le chargement) : la Terre au loin, les
+    // étoiles, puis la caméra rejoint le premier plan. Le défilement
+    // l'accélère ; elle est sautée si l'on arrive plus bas dans la page.
+    let introStart = -1;
+    if (reduced || jump || journey.progress > 0.01) journey.intro = 1;
+    else journey.intro = 0;
+    const stopIntro = onReady(() => {
+      introStart = performance.now();
+    });
+
     let raf = 0;
     let last = performance.now();
     let lastAlt = -1;
@@ -73,6 +84,10 @@ export function JourneyDirector() {
       raf = requestAnimationFrame(frame);
       const dt = Math.min((now - last) / 1000, 0.1);
       last = now;
+      if (journey.intro < 1 && introStart >= 0) {
+        const speed = window.scrollY > 20 ? 4 : 1;
+        journey.intro = Math.min(1, journey.intro + (dt * speed) / INTRO.duration);
+      }
       const target = journey.progress;
       journey.smooth = reduced || jump ? target : damp(journey.smooth, target, FOLLOW, dt);
       if (Math.abs(journey.smooth - target) < 0.00005) journey.smooth = target;
@@ -89,18 +104,16 @@ export function JourneyDirector() {
       }
 
       // Arrivée au Sénégal (synchronisée sur la caméra) : une lumière dorée naît
-      // sur le Sénégal, s'étend, et la photographie s'ouvre depuis ce point.
-      const bloom = window4(ARRIVAL.at, ARRIVAL.bloomPeak, ARRIVAL.photoFrom + 0.06, ARRIVAL.photoFull + 0.02, p);
-      const bloomSize = smoothstep(ARRIVAL.at, ARRIVAL.photoFull, p);
-      const arrive = smoothstep(ARRIVAL.photoFrom, ARRIVAL.photoFull, p);
-      const zoom = 1.24 - 0.24 * smoothstep(ARRIVAL.photoFrom, 1, p);
-      const copy = smoothstep(0.965, 0.995, p);
+      // sur le Sénégal, s'étend, puis se fond dans le bleu nuit de la section suivante.
+      const bloom = window4(ARRIVAL.at, ARRIVAL.bloomPeak, ARRIVAL.fadeFrom, ARRIVAL.fadeTo, p);
+      const bloomSize = smoothstep(ARRIVAL.at, ARRIVAL.fadeTo, p);
+      const arrive = smoothstep(ARRIVAL.fadeFrom, ARRIVAL.fadeTo, p);
       // Titrage d'ouverture : il s'envole pendant les premiers instants de la descente.
       // linéaire : chaque ligne a sa propre fenêtre de bascule (voir --l en CSS)
       const titleOut = Math.min(1, Math.max(0, (p - 0.002) / 0.07));
       const fx = (journey.focusX * 100).toFixed(1);
       const fy = (journey.focusY * 100).toFixed(1);
-      const vars = `${bloom.toFixed(3)}|${bloomSize.toFixed(3)}|${arrive.toFixed(3)}|${zoom.toFixed(4)}|${copy.toFixed(3)}|${p.toFixed(4)}|${fx}|${fy}`;
+      const vars = `${bloom.toFixed(3)}|${bloomSize.toFixed(3)}|${arrive.toFixed(3)}|${p.toFixed(4)}|${fx}|${fy}`;
       if (vars !== lastVars) {
         lastVars = vars;
         stage.style.setProperty("--bloom", bloom.toFixed(3));
@@ -108,8 +121,6 @@ export function JourneyDirector() {
         stage.style.setProperty("--fx", `${fx}%`);
         stage.style.setProperty("--fy", `${fy}%`);
         stage.style.setProperty("--arrive", arrive.toFixed(3));
-        stage.style.setProperty("--zoom", zoom.toFixed(4));
-        stage.style.setProperty("--copy", copy.toFixed(3));
         stage.style.setProperty("--title-out", titleOut.toFixed(4));
         root.style.setProperty("--progress", p.toFixed(4));
       }
@@ -146,6 +157,7 @@ export function JourneyDirector() {
 
     return () => {
       cancelAnimationFrame(raf);
+      stopIntro();
       trigger.kill();
     };
   }, []);

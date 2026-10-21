@@ -274,19 +274,7 @@ html.no-webgl .journey__fallback {
   70%, 100% { transform: translateX(100%); }
 }
 
-/* « Scroller » : un repère qui se voit, au centre en bas de l'écran. */
-.journey__scroll {
-  position: absolute;
-  left: 50%;
-  bottom: calc(5.5svh + 3.6rem);
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.7rem;
-  translate: -50% 0;
-}
-
+/* « Scroller » : la pastille animée (utilisée sur le premier écran de l'accueil). */
 .journey__scroll-pill {
   position: relative;
   display: inline-flex;
@@ -379,12 +367,8 @@ html.no-webgl .journey__fallback {
   100% { opacity: 0; transform: translate(4px, 4px); }
 }
 
-/* Téléphone : au-dessus des repères du bas, un peu plus haut, sans souris */
+/* Téléphone : sans la souris */
 @media (hover: none), (max-width: 760px) {
-  .journey__scroll {
-    bottom: calc(5.5svh + 8.6rem);
-  }
-
   .journey__scroll-mouse {
     display: none;
   }
@@ -2179,4 +2163,97 @@ body:has(.home2) .ft__link {
   width: auto;
   margin: 0;
   opacity: 1;
+}
+
+/* ------------------------------------------------------------------ */
+/* Premier écran : galerie en orbite (avant le voyage)                 */
+/* ------------------------------------------------------------------ */
+.cosmos {
+  position: relative;
+  z-index: 3;
+  height: 100svh;
+  overflow: hidden;
+  color: var(--white);
+  background: #000;
+}
+
+.cosmos__canvas {
+  position: absolute;
+  inset: 0;
+}
+
+/* fondu vers le voyage qui suit : le bas de l'écran laisse voir la Terre
+   (canvas fixe derrière), et l'écran s'efface en défilant. */
+.cosmos {
+  -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent);
+  mask-image: linear-gradient(to bottom, #000 78%, transparent);
+}
+
+@supports (animation-timeline: view()) {
+  .cosmos {
+    animation: cosmos-out linear both;
+    animation-timeline: view();
+    animation-range: exit 0% exit 80%;
+  }
+
+  @keyframes cosmos-out {
+    to {
+      opacity: 0;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cosmos {
+    animation: none;
+  }
+}
+
+.cosmos__copy {
+  position: absolute;
+  top: clamp(6.5rem, 17svh, 10rem);
+  left: 50%;
+  z-index: 1;
+  width: min(750px, calc(100vw - 2 * var(--gutter)));
+  translate: -50% 0;
+  text-align: center;
+  pointer-events: none;
+}
+
+.cosmos__eyebrow {
+  margin: 0 0 1.1rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--saloum-blue);
+}
+
+.cosmos__title {
+  margin: 0;
+  font-size: clamp(2.2rem, 5.2vw, 4rem);
+  font-weight: 300;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+  text-shadow: 0 2px 18px rgb(0 0 0 / 0.6);
+}
+
+.cosmos__scroll {
+  position: absolute;
+  left: 50%;
+  bottom: 7svh;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  translate: -50% 0;
+  pointer-events: none;
+}
+
+@media (hover: none), (max-width: 760px) {
+  .cosmos__scroll .journey__scroll-mouse {
+    display: none;
+  }
 }

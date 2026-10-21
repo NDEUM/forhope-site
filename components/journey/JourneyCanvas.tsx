@@ -52,7 +52,8 @@ function Pause() {
     let raf = 0;
     const check = () => {
       const journeyDone = journey.progress >= 0.999 && journey.smooth >= 0.995;
-      set({ frameloop: journeyDone && !journey.outroActive ? "never" : "always" });
+      const idle = (journeyDone && !journey.outroActive) || journey.introCovering;
+      set({ frameloop: idle ? "never" : "always" });
       raf = window.setTimeout(check, 250) as unknown as number;
     };
     check();

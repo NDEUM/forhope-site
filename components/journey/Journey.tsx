@@ -46,20 +46,6 @@ export function Journey() {
           <p className="journey__eyebrow">For Hope Association</p>
         </div>
 
-        {/* Invitation à défiler : bien en évidence, au centre en bas de l'écran (ordinateur et mobile). */}
-        <div className="journey__scroll" data-window="-1,-0.5,0.035,0.07">
-          <p className="journey__scroll-pill">
-            <span className="journey__scroll-mouse" aria-hidden="true">
-              <span />
-            </span>
-            Scroller
-          </p>
-          <span className="journey__scroll-chevrons" aria-hidden="true">
-            <span />
-            <span />
-          </span>
-        </div>
-
         <ol className="journey__captions">
           {captions.map((c) => (
             <li key={c.id} className={`journey__caption journey__caption--${c.id}`} data-window={`${c.from},${c.from + 0.035},${c.to - 0.035},${c.to}`}>

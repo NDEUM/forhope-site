@@ -1,4 +1,5 @@
 import { Journey } from "@/components/journey/Journey";
+import { CosmosIntro } from "@/components/home/CosmosIntro";
 import { HomeSections } from "@/components/home/HomeSections";
 import { PhotoArc } from "@/components/home/PhotoArc";
 import { PhotoMorph } from "@/components/home/PhotoMorph";
@@ -13,6 +14,8 @@ import "./home.css";
 export default function HomePage() {
   return (
     <div className="home2">
+      {/* Premier écran : les photos de For Hope en orbite, avant le voyage. */}
+      <CosmosIntro />
       <Journey />
       {/* Juste après la photo « Redonnons un sourire aux enfants » : les photos se rassemblent au fil du défilement. */}
       <PhotoMorph />

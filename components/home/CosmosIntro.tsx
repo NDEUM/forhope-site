@@ -9,7 +9,7 @@ import { journey } from "@/lib/journey-store";
 import { useQualityTier } from "@/hooks/useQualityTier";
 
 /** Photos servies en petite taille par l'optimiseur d'images (textures légères). */
-const thumb = (src: string) => `/_next/image?url=${encodeURIComponent(src)}&w=384&q=70`;
+const thumb = (src: string) => `/_next/image?url=${encodeURIComponent(src)}&w=384&q=75`;
 const IMAGES = homePhotos.map((p) => thumb(p.src));
 
 /**

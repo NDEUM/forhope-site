@@ -8,7 +8,6 @@ import { ambassadors, godparents, initials } from "@/content/people";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { HomeMotion } from "@/components/home/HomeMotion";
 import { LetterCarousel } from "@/components/home/LetterCarousel";
-import { CosmosIntro } from "@/components/home/CosmosIntro";
 
 /** Projet à la une. `progress` (0–1) n'est affiché que s'il est documenté. */
 const featured: { tag: string; title: string; text: string; photo: PhotoKey; href: string; progress?: number } = {
@@ -217,9 +216,6 @@ export function HomeSections() {
           </ul>
         </div>
       </section>
-
-      {/* « Ensemble, faisons grandir l'espoir » : les photos de For Hope en orbite, juste avant nos moments. */}
-      <CosmosIntro inLight />
 
       {/* Publications — nos moments en images. */}
       <section className="fh-section fh-moments" aria-labelledby="moments-title" data-carousel data-sweep>
